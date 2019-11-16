@@ -1,21 +1,19 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "SCameraShakeEditorViewport.h"
-#include "SCameraShakeEditorViewportToolBar.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 #include "UObject/Package.h"
 #include "EditorStyleSet.h"
-#include "ICameraShakeEditor.h"
-#include "CameraShakeEditorActions.h"
 #include "Slate/SceneViewport.h"
 #include "ComponentReregisterContext.h"
-#include "Runtime/Analytics/Analytics/Public/AnalyticsEventAttribute.h"
-#include "Runtime/Analytics/Analytics/Public/Interfaces/IAnalyticsProvider.h"
-#include "EngineAnalytics.h"
 #include "Widgets/Docking/SDockTab.h"
-#include "Editor/UnrealEd/Public/SEditorViewportToolBarMenu.h"
+#include "SEditorViewportToolBarMenu.h"
 #include "Editor.h"
+
+#include "SCameraShakeEditorViewportToolBar.h"
+#include "ICameraShakeEditor.h"
+#include "CameraShakeEditorActions.h"
 
 #define LOCTEXT_NAMESPACE "CameraShakeEditorViewport"
 
@@ -65,7 +63,8 @@ void SCameraShakeEditorViewport::PopulateViewportOverlays(TSharedRef<SOverlay> O
 }
 
 SCameraShakeEditorViewport::SCameraShakeEditorViewport()
-	: PreviewScene(MakeShareable(new FAdvancedPreviewScene(FPreviewScene::ConstructionValues())))
+	: PreviewScene(MakeShareable(new FAdvancedPreviewScene
+    (FPreviewScene::ConstructionValues())))
 {
 
 }

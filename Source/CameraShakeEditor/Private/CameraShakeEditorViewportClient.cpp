@@ -70,7 +70,8 @@ void FCameraShakeEditorViewportClient::Tick(float DeltaSeconds)
 
 bool FCameraShakeEditorViewportClient::InputWidgetDelta( FViewport* InViewport, EAxisList::Type CurrentAxis, FVector& Drag, FRotator& Rot, FVector& Scale )
 {
-    return true;
+    bool bHandled = false;
+    return bHandled;
 }
 
 void FCameraShakeEditorViewportClient::TrackingStarted( const struct FInputEventState& InInputState, bool bIsDraggingWidget, bool bNudge )

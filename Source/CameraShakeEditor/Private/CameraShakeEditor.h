@@ -45,6 +45,9 @@ public:
 	 */
 	void InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, UCameraShake* InObjectToEdit);
 
+    /** Creates details for a static mesh */
+    TSharedRef<class IDetailCustomization> MakeCameraShakeDetails();
+
 	//~ Begin FGCObject Interface
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
 	//~ End FGCObject Interface
@@ -93,6 +96,7 @@ public:
 
 private:
 	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);
+    TSharedRef<SDockTab> SpawnTab_Properties(const FSpawnTabArgs& Args);
 
 private:
 	/** Binds commands associated with the Camera Shake Editor. */
@@ -114,6 +118,11 @@ private:
 	/** Preview Viewport widget */
 	TSharedPtr<class SCameraShakeEditorViewport> Viewport;
 
+    /** Property View */
+    TSharedPtr<class IDetailsView> CameraShakeDetailsView;
+
+    /** Static mesh editor detail customization */
+    TWeakPtr<class FCameraShakeDetails> CameraShakeDetails;
 
 	/** The currently active Camera Shake. */
 	UCameraShake* CameraShake;
@@ -121,6 +130,7 @@ private:
 
 	/**	The tab ids for all the tabs used */
 	static const FName ViewportTabId;
+    static const FName PropertiesTabId;
 
 	/** A local reference to the private Extender set in FAssetEditorToolkit so that we can extend our Toolbar sub-menus */
 	TSharedPtr<FExtender> EditorToolbarExtender;

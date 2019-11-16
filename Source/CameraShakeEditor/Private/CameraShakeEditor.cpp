@@ -36,7 +36,8 @@
 #define LOCTEXT_NAMESPACE "CameraShakeEditor"
 
 
-const FName FCameraShakeEditor::ViewportTabId( TEXT( "CameraShakeEditor_Viewport" ) );
+const FName FCameraShakeEditor::ViewportTabId(TEXT("CameraShakeEditor_Viewport"));
+const FName FCameraShakeEditor::PropertiesTabId(TEXT("CameraShakeEditor_Properties"));
 
 const FName CameraShakeEditorAppIdentifier = FName(TEXT("CameraShakeEditorApp"));
 
@@ -58,6 +59,24 @@ void FCameraShakeEditor::InitEditorForCameraShake(UCameraShake* InObjectToEdit)
         .ObjectToEdit(InObjectToEdit);
 
 
+    {
+        FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+
+        FDetailsViewArgs DetailsViewArgs;
+        DetailsViewArgs.bAllowSearch = true;
+        DetailsViewArgs.bLockable = false;
+        DetailsViewArgs.bUpdatesFromSelection = false;
+        DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+        DetailsViewArgs.NotifyHook = this;
+
+        CameraShakeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+
+        FOnGetDetailCustomizationInstance LayoutCustomCameraShakeProperties = FOnGetDetailCustomizationInstance::CreateSP(this, &FCameraShakeEditor::MakeCameraShakeDetails);
+        CameraShakeDetailsView->RegisterInstancedCustomPropertyLayout(UCameraShake::StaticClass(), LayoutCustomCameraShakeProperties);
+    }
+
+
+
     SetCameraShake(InObjectToEdit);
 }
 
@@ -72,20 +91,28 @@ void FCameraShakeEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>
 	InTabManager->RegisterTabSpawner(
         ViewportTabId, FOnSpawnTab::CreateSP(this, &FCameraShakeEditor::SpawnTab_Viewport) 
     )
-    .SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
-    .SetGroup(WorkspaceMenuCategoryRef)
-    .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Viewports"));
+        .SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
+        .SetGroup(WorkspaceMenuCategoryRef)
+        .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Viewports"));
+
+    InTabManager->RegisterTabSpawner(
+        PropertiesTabId, FOnSpawnTab::CreateSP(this, &FCameraShakeEditor::SpawnTab_Properties)
+    )
+        .SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
+        .SetGroup(WorkspaceMenuCategoryRef)
+        .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
 	OnRegisterTabSpawners().Broadcast(InTabManager);
 }
 
 void FCameraShakeEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
-	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
+    FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
 
-	InTabManager->UnregisterTabSpawner( ViewportTabId );
+    InTabManager->UnregisterTabSpawner(ViewportTabId);
+    InTabManager->UnregisterTabSpawner(PropertiesTabId);
 
-	OnUnregisterTabSpawners().Broadcast(InTabManager);
+    OnUnregisterTabSpawners().Broadcast(InTabManager);
 }
 
 
@@ -126,6 +153,17 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
                     ->AddTab(ViewportTabId, ETabState::OpenedTab)
                     ->SetHideTabWell(true)
                 )
+                ->Split
+                (
+                    FTabManager::NewSplitter()->SetOrientation(Orient_Vertical)
+                    ->SetSizeCoefficient(0.2f)
+                    ->Split
+                    (
+                        FTabManager::NewStack()
+                        ->SetSizeCoefficient(0.7f)
+                        ->AddTab(PropertiesTabId, ETabState::OpenedTab)
+                    )
+                )
             )
         );
 
@@ -142,6 +180,13 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
 
     ExtendMenu();
     RegenerateMenusAndToolbars();
+}
+
+TSharedRef<class IDetailCustomization> FCameraShakeEditor::MakeCameraShakeDetails()
+{
+    TSharedRef<FCameraShakeDetails> NewDetails = MakeShareable(new FCameraShakeDetails(*this));
+    CameraShakeDetails = NewDetails;
+    return NewDetails;
 }
 
 void FCameraShakeEditor::ExtendMenu()
@@ -168,6 +213,18 @@ TSharedRef<SDockTab> FCameraShakeEditor::SpawnTab_Viewport( const FSpawnTabArgs&
 	Viewport->SetParentTab( SpawnedTab );
 
 	return SpawnedTab;
+}
+
+TSharedRef<SDockTab> FCameraShakeEditor::SpawnTab_Properties(const FSpawnTabArgs& Args)
+{
+    check(Args.GetTabId() == PropertiesTabId);
+
+    return SNew(SDockTab)
+        .Icon(FEditorStyle::GetBrush("CameraShakeEditor.Tabs.Properties"))
+        .Label(LOCTEXT("CameraShakeProperties_TabTitle", "Details"))
+        [
+            CameraShakeDetailsView.ToSharedRef()
+        ];
 }
 
 
@@ -199,6 +256,9 @@ FLinearColor FCameraShakeEditor::GetWorldCentricTabColorScale() const
 
 void FCameraShakeEditor::RefreshTool()
 {
+    bool bForceRefresh = true;
+    CameraShakeDetailsView->SetObject(CameraShake, bForceRefresh);
+
 	RefreshViewport();
 }
 
@@ -215,6 +275,9 @@ FEditorViewportClient& FCameraShakeEditor::GetViewportClient()
 void FCameraShakeEditor::SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera)
 {
     CameraShake = InCameraShake;
+
+    // Set the details view.
+    CameraShakeDetailsView->SetObject(CameraShake);
 
 	Viewport->UpdateCameraShake(CameraShake);
 	Viewport->RefreshViewport();
