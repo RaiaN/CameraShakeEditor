@@ -7,6 +7,7 @@
 #include "Toolkits/IToolkitHost.h"
 #include "Misc/NotifyHook.h"
 #include "ICameraShakeEditor.h"
+#include "Input/Reply.h"
 #include "TickableEditorObject.h"
 
 
@@ -93,6 +94,10 @@ public:
 	/** Returns the stat ID for this tickable class */
 	virtual TStatId GetStatId() const final;
 
+public:
+    FReply PlayCameraShake();
+    FReply StopCameraShake();
+
 
 private:
 	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);
@@ -126,7 +131,6 @@ private:
 
 	/** The currently active Camera Shake. */
 	UCameraShake* CameraShake;
-
 
 	/**	The tab ids for all the tabs used */
 	static const FName ViewportTabId;

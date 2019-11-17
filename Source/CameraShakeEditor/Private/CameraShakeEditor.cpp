@@ -14,6 +14,8 @@
 #include "UnrealEdGlobals.h"
 
 #include "Camera/CameraShake.h"
+#include "Camera/PlayerCameraManager.h"
+#include "Camera/CameraTypes.h"
 
 #include "PropertyEditorModule.h"
 #include "IDetailsView.h"
@@ -308,12 +310,40 @@ void FCameraShakeEditor::RedoAction()
 
 void FCameraShakeEditor::Tick(float DeltaTime)
 {
+    if (CameraShake->OscillatorTimeRemaining > 0.0f)
+    {
+        FMinimalViewInfo MinimalViewInfo;
+        MinimalViewInfo.Location = Viewport->GetViewportClient().GetViewLocation();
+        MinimalViewInfo.Rotation = Viewport->GetViewportClient().GetViewRotation();
 
+
+        CameraShake->UpdateAndApplyCameraShake(DeltaTime, 1.0f, MinimalViewInfo);
+
+        Viewport->GetViewportClient().SetViewLocation(MinimalViewInfo.Location);
+        Viewport->GetViewportClient().SetViewRotation(MinimalViewInfo.Rotation);
+    }    
 }
 
 TStatId FCameraShakeEditor::GetStatId() const
 {
 	RETURN_QUICK_DECLARE_CYCLE_STAT(FCameraShakeEditor, STATGROUP_TaskGraphTasks);
+}
+
+FReply FCameraShakeEditor::PlayCameraShake()
+{
+    CameraShake->OscillatorTimeRemaining = CameraShake->OscillationBlendOutTime + 1.0f;
+
+    CameraShake->PlayShake(nullptr, 1.0f, ECameraAnimPlaySpace::World);
+
+    return FReply::Handled();
+}
+
+FReply FCameraShakeEditor::StopCameraShake()
+{
+    bool bImmediately = true;
+    CameraShake->StopShake(bImmediately);
+
+    return FReply::Handled();
 }
 
 #undef LOCTEXT_NAMESPACE
