@@ -16,16 +16,12 @@
 #include "Camera/CameraShake.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraTypes.h"
-#include "Camera/CameraAnimInst.h"
 
 #include "PropertyEditorModule.h"
 #include "IDetailsView.h"
 #include "IDetailCustomization.h"
 
-#include "BusyCursor.h"
-#include "Editor/UnrealEd/Private/GeomFitUtils.h"
 #include "EditorViewportCommands.h"
-#include "Editor/UnrealEd/Private/ConvexDecompTool.h"
 
 #include "Widgets/Docking/SDockTab.h"
 #include "Framework/Commands/GenericCommands.h"
@@ -34,6 +30,7 @@
 #include "SCameraShakeEditorViewport.h"
 #include "CameraShakeEditorModule.h"
 #include "CameraShakeEditorActions.h"
+#include "CameraShakeDetails.h"
 
 
 #define LOCTEXT_NAMESPACE "CameraShakeEditor"
@@ -350,33 +347,31 @@ void FCameraShakeEditor::RedoAction()
 
 void FCameraShakeEditor::ResetCamera()
 {
-    Viewport->GetViewportClient().SetViewLocation(FVector::ZeroVector);
-    Viewport->GetViewportClient().SetViewRotation(FRotator::ZeroRotator);
-    Viewport->GetViewportClient().ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
+    FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
+
+    ViewportClient.SetViewLocation(FVector::ZeroVector);
+    ViewportClient.SetViewRotation(FRotator::ZeroRotator);
+    ViewportClient.ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
 }
 
 void FCameraShakeEditor::Tick(float DeltaTime)
 {
     if (CameraShake->OscillatorTimeRemaining > 0.0f)
     {
+        FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
+
         FMinimalViewInfo MinimalViewInfo;
-        MinimalViewInfo.Location = Viewport->GetViewportClient().GetViewLocation();
-        MinimalViewInfo.Rotation = Viewport->GetViewportClient().GetViewRotation();
-        MinimalViewInfo.FOV = Viewport->GetViewportClient().ViewFOV;
+        MinimalViewInfo.Location = ViewportClient.GetViewLocation();
+        MinimalViewInfo.Rotation = ViewportClient.GetViewRotation();
+        MinimalViewInfo.FOV = ViewportClient.ViewFOV;
 
         {
             CameraShake->UpdateAndApplyCameraShake(DeltaTime, 1.0f, MinimalViewInfo);
         }
 
-        if (IsValid(CameraShake->AnimInst))
-        {
-            CameraShake->AnimInst->AdvanceAnim(DeltaTime, false);
-            CameraShake->AnimInst->ApplyToView(MinimalViewInfo);
-        }
-
-        Viewport->GetViewportClient().SetViewLocation(MinimalViewInfo.Location);
-        Viewport->GetViewportClient().SetViewRotation(MinimalViewInfo.Rotation);
-        Viewport->GetViewportClient().ViewFOV = MinimalViewInfo.FOV;
+        ViewportClient.SetViewLocation(MinimalViewInfo.Location);
+        ViewportClient.SetViewRotation(MinimalViewInfo.Rotation);
+        ViewportClient.ViewFOV = MinimalViewInfo.FOV;
     }    
 }
 

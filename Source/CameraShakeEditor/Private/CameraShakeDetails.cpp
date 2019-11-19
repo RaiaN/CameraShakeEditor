@@ -19,8 +19,11 @@ FCameraShakeDetails::~FCameraShakeDetails()
 
 void FCameraShakeDetails::CustomizeDetails(class IDetailLayoutBuilder& DetailBuilder)
 {
-    IDetailCategoryBuilder& CameraShakeCategory = DetailBuilder.EditCategory("StaticMesh", LOCTEXT("CameraShakeGeneralSettings", "General Settings"));
+    IDetailCategoryBuilder& CameraShakeCategory = DetailBuilder.EditCategory("GeneralSettings", LOCTEXT("CameraShakeGeneralSettings", "General Settings"));
 
+    DetailBuilder.HideCategory("AnimShake");
+
+    
     const FText PlayCameraShakeText = LOCTEXT("PlayCameraShake", "Play");
     const FText StopCameraShakeText = LOCTEXT("StopCameraShake", "Stop");
 

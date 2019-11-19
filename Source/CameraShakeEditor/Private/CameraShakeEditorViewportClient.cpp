@@ -12,10 +12,7 @@
 #include "UnrealEngine.h"
 #include "SEditorViewport.h"
 #include "AdvancedPreviewScene.h"
-#include "Runtime/Analytics/Analytics/Public/Interfaces/IAnalyticsProvider.h"
-#include "EngineAnalytics.h"
 #include "Engine/AssetUserData.h"
-#include "Editor/EditorPerProjectUserSettings.h"
 
 #include "ICameraShakeEditor.h"
 #include "SCameraShakeEditorViewport.h"

@@ -6,12 +6,12 @@
 #include "Widgets/Text/STextBlock.h"
 #include "UObject/Package.h"
 #include "EditorStyleSet.h"
+#include "Slate/SceneViewport.h"
+#include "Widgets/Docking/SDockTab.h"
+#include "SEditorViewportToolBarMenu.h"
+
 #include "ICameraShakeEditor.h"
 #include "CameraShakeEditorActions.h"
-#include "Slate/SceneViewport.h"
-#include "EngineAnalytics.h"
-#include "Widgets/Docking/SDockTab.h"
-#include "Editor/UnrealEd/Public/SEditorViewportToolBarMenu.h"
 
 #define LOCTEXT_NAMESPACE "CameraShakeEditorViewportToolbar"
 

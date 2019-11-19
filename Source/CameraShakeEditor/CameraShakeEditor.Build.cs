@@ -6,7 +6,16 @@ public class CameraShakeEditor : ModuleRules
 {
 	public CameraShakeEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateIncludePathModuleNames.AddRange(
+        {
+            bEnableShadowVariableWarnings = false;
+
+            bEnforceIWYU = true;
+            bFasterWithoutUnity = true;
+
+            PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        }
+
+        PrivateIncludePathModuleNames.AddRange(
 			new string[] {
 				"AssetRegistry",
 				"Kismet",

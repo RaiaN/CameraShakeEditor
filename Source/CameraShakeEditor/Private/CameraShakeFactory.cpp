@@ -1,6 +1,8 @@
 #include "CameraShakeFactory.h"
+
 #include "Camera/CameraShake.h"
 #include "Internationalization/Internationalization.h"
+#include "AssetTypeCategories.h"
 
 
 UCameraShakeFactory::UCameraShakeFactory(const FObjectInitializer& ObjectInitializer)
