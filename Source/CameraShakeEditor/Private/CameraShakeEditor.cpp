@@ -16,6 +16,7 @@
 #include "Camera/CameraShake.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraTypes.h"
+#include "Camera/CameraAnimInst.h"
 
 #include "PropertyEditorModule.h"
 #include "IDetailsView.h"
@@ -351,6 +352,7 @@ void FCameraShakeEditor::ResetCamera()
 {
     Viewport->GetViewportClient().SetViewLocation(FVector::ZeroVector);
     Viewport->GetViewportClient().SetViewRotation(FRotator::ZeroRotator);
+    Viewport->GetViewportClient().ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
 }
 
 void FCameraShakeEditor::Tick(float DeltaTime)
@@ -360,12 +362,21 @@ void FCameraShakeEditor::Tick(float DeltaTime)
         FMinimalViewInfo MinimalViewInfo;
         MinimalViewInfo.Location = Viewport->GetViewportClient().GetViewLocation();
         MinimalViewInfo.Rotation = Viewport->GetViewportClient().GetViewRotation();
+        MinimalViewInfo.FOV = Viewport->GetViewportClient().ViewFOV;
 
+        {
+            CameraShake->UpdateAndApplyCameraShake(DeltaTime, 1.0f, MinimalViewInfo);
+        }
 
-        CameraShake->UpdateAndApplyCameraShake(DeltaTime, 1.0f, MinimalViewInfo);
+        if (IsValid(CameraShake->AnimInst))
+        {
+            CameraShake->AnimInst->AdvanceAnim(DeltaTime, false);
+            CameraShake->AnimInst->ApplyToView(MinimalViewInfo);
+        }
 
         Viewport->GetViewportClient().SetViewLocation(MinimalViewInfo.Location);
         Viewport->GetViewportClient().SetViewRotation(MinimalViewInfo.Rotation);
+        Viewport->GetViewportClient().ViewFOV = MinimalViewInfo.FOV;
     }    
 }
 
