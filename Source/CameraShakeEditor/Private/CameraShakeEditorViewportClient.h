@@ -35,6 +35,8 @@ public:
 	virtual void TrackingStarted( const struct FInputEventState& InInputState, bool bIsDragging, bool bNudge ) override;
 	virtual void TrackingStopped() override;
 
+    void ResetCamera();
+
 	void SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera=true);
 
 	/** Used to toggle the floor when vertex colours should be shown */

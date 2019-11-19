@@ -107,14 +107,16 @@ private:
 	/** Binds commands associated with the Camera Shake Editor. */
 	void BindCommands();
 
+    void ExtendToolbar();
+
 	
 	void SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera = true);
 
-	/** Undo Action**/
 	void UndoAction();
 
-	/** Redo Action **/
 	void RedoAction();
+
+    void ResetCamera();
 
 private:
 	/** List of open tool panels; used to ensure only one exists at any one time */
@@ -135,7 +137,4 @@ private:
 	/**	The tab ids for all the tabs used */
 	static const FName ViewportTabId;
     static const FName PropertiesTabId;
-
-	/** A local reference to the private Extender set in FAssetEditorToolkit so that we can extend our Toolbar sub-menus */
-	TSharedPtr<FExtender> EditorToolbarExtender;
 };

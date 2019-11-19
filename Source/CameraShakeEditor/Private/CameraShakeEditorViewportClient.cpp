@@ -88,6 +88,14 @@ void FCameraShakeEditorViewportClient::TrackingStopped()
 }
 
 
+void FCameraShakeEditorViewportClient::ResetCamera()
+{
+    SetViewLocation(FVector::ZeroVector);
+    SetViewRotation(FRotator::ZeroRotator);
+
+    Invalidate();
+}
+
 void FCameraShakeEditorViewportClient::Draw(const FSceneView* View,FPrimitiveDrawInterface* PDI)
 {
 	FEditorViewportClient::Draw(View, PDI);

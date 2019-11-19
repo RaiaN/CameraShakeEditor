@@ -54,11 +54,13 @@ void FCameraShakeEditor::InitEditorForCameraShake(UCameraShake* InObjectToEdit)
     // Register our commands. This will only register them if not previously registered
     FCameraShakeEditorCommands::Register();
 
-    BindCommands();
-
     Viewport = SNew(SCameraShakeEditorViewport)
         .CameraShakeEditor(SharedThis(this))
         .ObjectToEdit(InObjectToEdit);
+
+    BindCommands();
+
+    ExtendToolbar();
 
 
     {
@@ -232,9 +234,46 @@ TSharedRef<SDockTab> FCameraShakeEditor::SpawnTab_Properties(const FSpawnTabArgs
 
 void FCameraShakeEditor::BindCommands()
 {
+    const FCameraShakeEditorCommands& Commands = FCameraShakeEditorCommands::Get();
 
+    const TSharedRef<FUICommandList>& UICommandList = GetToolkitCommands();
+
+    UICommandList->MapAction(
+        Commands.ResetCamera,
+        FExecuteAction::CreateSP(this, &FCameraShakeEditor::ResetCamera)
+    );
 }
 
+
+void FCameraShakeEditor::ExtendToolbar()
+{
+    struct Local
+    {
+        static void FillToolbar(FToolBarBuilder& ToolbarBuilder, FCameraShakeEditor* ThisEditor)
+        {
+            ToolbarBuilder.BeginSection("Camera");
+            {
+                ToolbarBuilder.AddToolBarButton(FCameraShakeEditorCommands::Get().ResetCamera);
+            }
+            ToolbarBuilder.EndSection();
+        }
+    };
+
+    TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
+
+    FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
+
+    FCameraShakeEditor* ThisEditor = this;
+
+    ToolbarExtender->AddToolBarExtension(
+        "Asset",
+        EExtensionHook::After,
+        Viewport->GetCommandList(),
+        FToolBarExtensionDelegate::CreateStatic(&Local::FillToolbar, ThisEditor)
+    );
+
+    AddToolbarExtender(ToolbarExtender);
+}
 
 FName FCameraShakeEditor::GetToolkitFName() const
 {
@@ -306,6 +345,12 @@ void FCameraShakeEditor::UndoAction()
 void FCameraShakeEditor::RedoAction()
 {
 	GEditor->RedoTransaction();
+}
+
+void FCameraShakeEditor::ResetCamera()
+{
+    Viewport->GetViewportClient().SetViewLocation(FVector::ZeroVector);
+    Viewport->GetViewportClient().SetViewRotation(FRotator::ZeroRotator);
 }
 
 void FCameraShakeEditor::Tick(float DeltaTime)
