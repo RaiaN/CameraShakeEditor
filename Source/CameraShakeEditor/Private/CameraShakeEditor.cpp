@@ -251,7 +251,13 @@ void FCameraShakeEditor::ExtendToolbar()
         {
             ToolbarBuilder.BeginSection("Camera");
             {
-                ToolbarBuilder.AddToolBarButton(FCameraShakeEditorCommands::Get().ResetCamera);
+                ToolbarBuilder.AddToolBarButton(
+                    FCameraShakeEditorCommands::Get().ResetCamera,
+                    NAME_None,
+                    FCameraShakeEditorCommands::Get().ResetCamera->GetLabel(),
+                    FCameraShakeEditorCommands::Get().ResetCamera->GetDescription(),
+                    FSlateIcon("EditorStyle", "StaticMeshEditor.ResetCamera")
+                );
             }
             ToolbarBuilder.EndSection();
         }
