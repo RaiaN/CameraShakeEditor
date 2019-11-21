@@ -35,7 +35,7 @@ FCameraShakeEditorViewportClient::FCameraShakeEditorViewportClient(
 	, CameraShakeEditorPtr(InCameraShakeEditor)
 	, CameraShakeEditorViewportPtr(InCameraShakeEditorViewport)
 {
-    PreviewScene = InPreviewScene;
+    PreviewScene = &InPreviewScene.Get();
 
 	SetCameraShake(InCameraShake);
 
@@ -60,17 +60,6 @@ bool FCameraShakeEditorViewportClient::InputWidgetDelta( FViewport* InViewport, 
 {
     bool bHandled = false;
     return bHandled;
-}
-
-void FCameraShakeEditorViewportClient::Draw(FViewport* Viewport, FCanvas* Canvas)
-{
-    // Clear out the lines from the previous frame
-    PreviewScene->ClearLineBatcher();
-
-    ULineBatchComponent* LineBatcher = PreviewScene->GetLineBatcher();
-    PreviewScene->RemoveComponent(LineBatcher);
-
-    FEditorViewportClient::Draw(Viewport, Canvas);
 }
 
 UWorld* FCameraShakeEditorViewportClient::GetWorld() const

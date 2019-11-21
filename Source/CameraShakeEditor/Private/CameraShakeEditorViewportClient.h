@@ -33,8 +33,6 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual bool InputWidgetDelta( FViewport* Viewport, EAxisList::Type CurrentAxis, FVector& Drag, FRotator& Rot, FVector& Scale ) override;
 
-    void Draw(FViewport* Viewport, FCanvas* Canvas) override;
-
     virtual UWorld* GetWorld() const override;
 
     void ResetCamera();
@@ -52,5 +50,5 @@ private:
 	TWeakPtr<SCameraShakeEditorViewport> CameraShakeEditorViewportPtr;
 
 	/** Stored pointer to the preview scene in which the camera shake is shown */
-	TSharedPtr<FPreviewScene> PreviewScene;
+	FPreviewScene* PreviewScene;
 };
