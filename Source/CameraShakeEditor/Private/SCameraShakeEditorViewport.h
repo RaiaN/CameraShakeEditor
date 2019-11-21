@@ -9,7 +9,7 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "EditorViewportClient.h"
 #include "CameraShakeEditorViewportClient.h"
-#include "AdvancedPreviewScene.h"
+#include "PreviewScene.h"
 #include "SEditorViewport.h"
 #include "SCommonEditorViewportToolbarBase.h"
 
@@ -68,7 +68,7 @@ public:
 	// End of ICommonEditorViewportToolbarInfoProvider interface
 
 	/** Returns the preview scene being renderd in the viewport */
-	TSharedRef<FAdvancedPreviewScene> GetPreviewScene() { return PreviewScene.ToSharedRef(); }
+	TSharedRef<FPreviewScene> GetPreviewScene() { return PreviewScene.ToSharedRef(); }
 protected:
 	/** SEditorViewport interface */
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient() override;
@@ -92,7 +92,7 @@ private:
 	TWeakPtr<ICameraShakeEditor> CameraShakeEditorPtr;
 
 	/** The scene for this viewport. */
-	TSharedPtr<FAdvancedPreviewScene> PreviewScene;
+	TSharedPtr<FPreviewScene> PreviewScene;
 
 	/** Editor viewport client */
 	TSharedPtr<class FCameraShakeEditorViewportClient> EditorViewportClient;

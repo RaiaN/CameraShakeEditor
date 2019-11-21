@@ -6,13 +6,15 @@
 #include "Editor.h"
 #include "CanvasItem.h"
 #include "CanvasTypes.h"
+#include "Components/LineBatchComponent.h"
 #include "Engine/Canvas.h"
 #include "ThumbnailRendering/SceneThumbnailInfo.h"
 #include "Utils.h"
 #include "UnrealEngine.h"
 #include "SEditorViewport.h"
-#include "AdvancedPreviewScene.h"
+#include "PreviewScene.h"
 #include "Engine/AssetUserData.h"
+#include "Editor/EditorEngine.h"
 
 #include "ICameraShakeEditor.h"
 #include "SCameraShakeEditorViewport.h"
@@ -22,7 +24,7 @@
 FCameraShakeEditorViewportClient::FCameraShakeEditorViewportClient(
     TWeakPtr<ICameraShakeEditor> InCameraShakeEditor,
     const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport,
-    const TSharedRef<FAdvancedPreviewScene>& InPreviewScene,
+    const TSharedRef<FPreviewScene>& InPreviewScene,
     UCameraShake* InCameraShake
 ) : 
     FEditorViewportClient(
@@ -33,22 +35,16 @@ FCameraShakeEditorViewportClient::FCameraShakeEditorViewportClient(
 	, CameraShakeEditorPtr(InCameraShakeEditor)
 	, CameraShakeEditorViewportPtr(InCameraShakeEditorViewport)
 {
-	// Setup defaults for the common draw helper.
-	DrawHelper.bDrawWorldBox = false;
-	DrawHelper.bDrawKillZ = false;
-	DrawHelper.bDrawGrid = true;
-	DrawHelper.GridColorAxis = FColor(160,160,160);
-	DrawHelper.GridColorMajor = FColor(144,144,144);
-	DrawHelper.GridColorMinor = FColor(128,128,128);
-
-	SetViewMode(VMI_Lit);
-
-	OverrideNearClipPlane(1.0f);
-
-	AdvancedPreviewScene = static_cast<FAdvancedPreviewScene*>(PreviewScene);
+    PreviewScene = InPreviewScene;
 
 	SetCameraShake(InCameraShake);
+
+    EngineShowFlags = FEngineShowFlags(ESFIM_Editor);
+    EngineShowFlags.SetEditor(false);
+
+    SetViewMode(VMI_Lit);
 }
+
 
 FCameraShakeEditorViewportClient::~FCameraShakeEditorViewportClient()
 {
@@ -58,13 +54,6 @@ void FCameraShakeEditorViewportClient::Tick(float DeltaSeconds)
 {
 	FEditorViewportClient::Tick(DeltaSeconds);
 
-
-
-	// Tick the preview scene world.
-	if (!GIntraFrameDebuggingGameThread)
-	{
-		PreviewScene->GetWorld()->Tick(LEVELTICK_All, DeltaSeconds);
-	}
 }
 
 bool FCameraShakeEditorViewportClient::InputWidgetDelta( FViewport* InViewport, EAxisList::Type CurrentAxis, FVector& Drag, FRotator& Rot, FVector& Scale )
@@ -73,17 +62,33 @@ bool FCameraShakeEditorViewportClient::InputWidgetDelta( FViewport* InViewport, 
     return bHandled;
 }
 
-void FCameraShakeEditorViewportClient::TrackingStarted( const struct FInputEventState& InInputState, bool bIsDraggingWidget, bool bNudge )
+void FCameraShakeEditorViewportClient::Draw(FViewport* Viewport, FCanvas* Canvas)
 {
-	
+    // Clear out the lines from the previous frame
+    PreviewScene->ClearLineBatcher();
+
+    ULineBatchComponent* LineBatcher = PreviewScene->GetLineBatcher();
+    PreviewScene->RemoveComponent(LineBatcher);
+
+    FEditorViewportClient::Draw(Viewport, Canvas);
 }
 
-
-void FCameraShakeEditorViewportClient::TrackingStopped()
+UWorld* FCameraShakeEditorViewportClient::GetWorld() const
 {
-	
-}
+    UWorld* World = FEditorViewportClient::GetWorld();
 
+    const TArray<FEditorViewportClient*>& AllViewportClients = GEditor->GetAllViewportClients();
+    for (FEditorViewportClient* CurrViewportClient : AllViewportClients)
+    {
+        if ((FLevelEditorViewportClient*)CurrViewportClient != nullptr && IsValid(CurrViewportClient->GetWorld()))
+        {
+            World = CurrViewportClient->GetWorld();
+            break;
+        }
+    }
+
+    return World;
+}
 
 void FCameraShakeEditorViewportClient::ResetCamera()
 {
@@ -91,18 +96,6 @@ void FCameraShakeEditorViewportClient::ResetCamera()
     SetViewRotation(FRotator::ZeroRotator);
 
     Invalidate();
-}
-
-void FCameraShakeEditorViewportClient::Draw(const FSceneView* View,FPrimitiveDrawInterface* PDI)
-{
-	FEditorViewportClient::Draw(View, PDI);
-
-}
-
-void FCameraShakeEditorViewportClient::DrawCanvas( FViewport& InViewport, FSceneView& View, FCanvas& Canvas )
-{
-
-	FEditorViewportClient::DrawCanvas(InViewport, View, Canvas);
 }
 
 
@@ -118,8 +111,6 @@ bool FCameraShakeEditorViewportClient::InputKey(FViewport* InViewport, int32 Con
 	// Handle viewport screenshot.
 	bHandled |= InputTakeScreenshot( InViewport, Key, Event );
 
-	bHandled |= AdvancedPreviewScene->HandleInputKey(InViewport, ControllerId, Key, Event, AmountDepressed, Gamepad);
-
 	return bHandled;
 }
 
@@ -129,15 +120,7 @@ bool FCameraShakeEditorViewportClient::InputAxis(FViewport* InViewport, int32 Co
 	
 	if (!bDisableInput)
 	{
-		bResult = AdvancedPreviewScene->HandleViewportInput(InViewport, ControllerId, Key, Delta, DeltaTime, NumSamples, bGamepad);
-		if (bResult)
-		{
-			Invalidate();
-		}
-		else
-		{
-			bResult = FEditorViewportClient::InputAxis(InViewport, ControllerId, Key, Delta, DeltaTime, NumSamples, bGamepad);
-		}
+		bResult = FEditorViewportClient::InputAxis(InViewport, ControllerId, Key, Delta, DeltaTime, NumSamples, bGamepad);
 	}
 
 	return bResult;
@@ -145,16 +128,9 @@ bool FCameraShakeEditorViewportClient::InputAxis(FViewport* InViewport, int32 Co
 
 void FCameraShakeEditorViewportClient::ProcessClick(class FSceneView& InView, class HHitProxy* HitProxy, FKey Key, EInputEvent Event, uint32 HitX, uint32 HitY)
 {
-
 	Invalidate();
 }
 
-
-void FCameraShakeEditorViewportClient::SetFloorAndEnvironmentVisibility(const bool bVisible)
-{
-	AdvancedPreviewScene->SetFloorVisibility(bVisible, true);
-	AdvancedPreviewScene->SetEnvironmentVisibility(bVisible, true);
-}
 
 void FCameraShakeEditorViewportClient::SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera/* =true */)
 {

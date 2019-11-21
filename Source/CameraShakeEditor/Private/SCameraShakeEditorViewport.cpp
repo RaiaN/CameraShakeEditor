@@ -63,8 +63,7 @@ void SCameraShakeEditorViewport::PopulateViewportOverlays(TSharedRef<SOverlay> O
 }
 
 SCameraShakeEditorViewport::SCameraShakeEditorViewport()
-	: PreviewScene(MakeShareable(new FAdvancedPreviewScene
-    (FPreviewScene::ConstructionValues())))
+	: PreviewScene(MakeShareable(new FPreviewScene(FPreviewScene::ConstructionValues())))
 {
 
 }
