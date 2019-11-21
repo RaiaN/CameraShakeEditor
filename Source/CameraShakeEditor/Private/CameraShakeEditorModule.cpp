@@ -4,14 +4,19 @@
 
 #include "Modules/ModuleManager.h"
 #include "AssetToolsModule.h"
+#include "Styling/SlateStyle.h"
+#include "Styling/SlateStyleRegistry.h"
+#include "Brushes/SlateImageBrush.h"
+#include "Interfaces/IPluginManager.h"
+#include "Misc/Paths.h"
 
 #include "AssetTypeActions_CameraShake.h"
 #include "CameraShakeEditor.h"
 #include "ICameraShakeEditor.h"
 
 
-
 #define LOCTEXT_NAMESPACE "FCameraShakeEditorModule"
+
 
 
 /**
@@ -20,6 +25,7 @@
 class FCameraShakeEditorModule : public ICameraShakeEditorModule
 {
 public:
+
     /** Constructor, set up console commands and variables **/
     FCameraShakeEditorModule()
     {
@@ -30,8 +36,22 @@ public:
      */
     virtual void StartupModule() override
     {
-        // Make sure the advanced preview scene module is loaded
-        FModuleManager::Get().LoadModuleChecked("AdvancedPreviewScene");
+        const FString& PluginContent = IPluginManager::Get().FindPlugin("CameraShakeEditor")->GetBaseDir() + "/Content";
+
+        CameraShakeStyleSet = MakeShareable(new FSlateStyleSet("CameraShake"));
+        CameraShakeStyleSet->SetContentRoot(FPaths::EngineContentDir() / TEXT("Editor/Slate"));
+        CameraShakeStyleSet->SetCoreContentRoot(FPaths::EngineContentDir() / TEXT("Slate"));
+
+        const FVector2D Vec16(16.0f, 16.0f);
+        const FVector2D Vec64(64.0f, 64.0f);
+
+        CameraShakeStyleSet->Set("ClassIcon.CameraShake", new FSlateImageBrush(PluginContent + "/CameraShakeAsset_16.png", Vec16));
+        CameraShakeStyleSet->Set("ClassThumbnail.CameraShake", new FSlateImageBrush(PluginContent + "/CameraShakeAsset_64.png", Vec64));
+
+        FSlateStyleRegistry::RegisterSlateStyle(*CameraShakeStyleSet.Get());
+
+
+
 
         MenuExtensibilityManager = MakeShareable(new FExtensibilityManager);
 
@@ -44,6 +64,8 @@ public:
      */
     virtual void ShutdownModule() override
     {
+        FSlateStyleRegistry::UnRegisterSlateStyle(*CameraShakeStyleSet.Get());
+
         MenuExtensibilityManager.Reset();
     }
 
@@ -64,6 +86,8 @@ public:
 
 private:
     TSharedPtr<FExtensibilityManager> MenuExtensibilityManager;
+
+    TSharedPtr<FSlateStyleSet> CameraShakeStyleSet;
 };
 
 

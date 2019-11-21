@@ -2,19 +2,13 @@
 
 #include "CameraShakeEditorViewportClient.h"
 #include "EngineGlobals.h"
-#include "Settings/LevelEditorViewportSettings.h"
 #include "Editor.h"
-#include "CanvasItem.h"
-#include "CanvasTypes.h"
-#include "Components/LineBatchComponent.h"
 #include "Engine/Canvas.h"
-#include "ThumbnailRendering/SceneThumbnailInfo.h"
-#include "Utils.h"
 #include "UnrealEngine.h"
 #include "SEditorViewport.h"
 #include "PreviewScene.h"
-#include "Engine/AssetUserData.h"
 #include "Editor/EditorEngine.h"
+#include "Camera/CameraShake.h"
 
 #include "ICameraShakeEditor.h"
 #include "SCameraShakeEditorViewport.h"
@@ -37,7 +31,8 @@ FCameraShakeEditorViewportClient::FCameraShakeEditorViewportClient(
 {
     PreviewScene = &InPreviewScene.Get();
 
-	SetCameraShake(InCameraShake);
+    bool bReset = true;
+	SetCameraShake(InCameraShake, bReset);
 
     EngineShowFlags = FEngineShowFlags(ESFIM_Editor);
     EngineShowFlags.SetEditor(false);
@@ -125,10 +120,10 @@ void FCameraShakeEditorViewportClient::SetCameraShake(UCameraShake* InCameraShak
 {
     CameraShake = InCameraShake;
 
-	
 	if (bResetCamera)
     {
-
+        CameraShake->StopShake(true);
+        ResetCamera();
 	}
 }
 

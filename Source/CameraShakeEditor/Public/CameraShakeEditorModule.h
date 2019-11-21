@@ -8,7 +8,9 @@
 #include "Toolkits/IToolkit.h"
 #include "ICameraShakeEditor.h"
 
+
 class UCameraShake;
+class FSlateStyleSet;
 
 
 class ICameraShakeEditorModule : public IModuleInterface, public IHasMenuExtensibility

@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class CameraShakeEditor : ModuleRules
+public class CameraShakeRuntime : ModuleRules
 {
-	public CameraShakeEditor(ReadOnlyTargetRules Target) : base(Target)
+	public CameraShakeRuntime(ReadOnlyTargetRules Target) : base(Target)
 	{
         {
             bEnableShadowVariableWarnings = false;
@@ -17,10 +17,7 @@ public class CameraShakeEditor : ModuleRules
 
         PrivateIncludePathModuleNames.AddRange(
 			new string[] {
-				"AssetRegistry",
-				"Kismet",
-                "PropertyEditor",
-                "AssetTools"
+                "Kismet"
             }
 		);
 
@@ -29,21 +26,7 @@ public class CameraShakeEditor : ModuleRules
 				"Core",
 				"CoreUObject",
 				"ApplicationCore",
-				"Engine",
-                "InputCore",
-				"Slate",
-				"SlateCore",
-                "EditorStyle",
-				"UnrealEd",
-                "PropertyEditor",
-                "AssetTools",
-                "Projects"
-            }
-		);
-
-		DynamicallyLoadedModuleNames.AddRange(
-			new string[] {
-				"ClassViewer"
+				"Engine"
             }
 		);
 	}
