@@ -37,7 +37,8 @@ public class CameraShakeEditor : ModuleRules
 				"UnrealEd",
                 "PropertyEditor",
                 "AssetTools",
-                "Projects"
+                "Projects",
+                "CameraShakeRuntime"
             }
 		);
 

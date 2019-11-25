@@ -6,7 +6,6 @@
 
 void FCameraShakeEditorCommands::RegisterCommands()
 {
-    UI_COMMAND(ResetCamera, "Reset Camera", "Resets the camera to default settings", EUserInterfaceActionType::Button, FInputChord());
 }
 
 #undef LOCTEXT_NAMESPACE

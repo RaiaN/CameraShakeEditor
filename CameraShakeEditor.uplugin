@@ -3,18 +3,18 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "CameraShakeEditor",
-	"Description": "Allows to set up a camera shake in a more flexible way",
-	"Category": "Other",
+	"Description": "Allows to set up a camera shake in realtime",
+	"Category": "Code Plugins",
 	"CreatedBy": "Peter Leontev",
-	"CreatedByURL": "",
+	"CreatedByURL": "https://peterleontev.com/",
 	"DocsURL": "",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "raianknight@gmail.com",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": false,
 	"Modules": [
-        {
+		{
 			"Name": "CameraShakeRuntime",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

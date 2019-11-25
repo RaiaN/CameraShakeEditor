@@ -27,10 +27,14 @@
 #include "Framework/Commands/GenericCommands.h"
 #include "Widgets/Input/STextComboBox.h"
 
+#include "CameraShakeLibrary.h"
+
 #include "SCameraShakeEditorViewport.h"
 #include "CameraShakeEditorModule.h"
 #include "CameraShakeEditorActions.h"
 #include "CameraShakeDetails.h"
+
+
 
 
 #define LOCTEXT_NAMESPACE "CameraShakeEditor"
@@ -123,6 +127,9 @@ FCameraShakeEditor::~FCameraShakeEditor()
 	OnCameraShakeEditorClosed().Broadcast();
 
 	GEditor->UnregisterForUndo( this );
+
+    CameraShake = nullptr;
+    CameraShakeToPlay = nullptr;
 }
 
 void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InitToolkitHost, UCameraShake* InObjectToEdit)
@@ -232,14 +239,7 @@ TSharedRef<SDockTab> FCameraShakeEditor::SpawnTab_Properties(const FSpawnTabArgs
 
 void FCameraShakeEditor::BindCommands()
 {
-    const FCameraShakeEditorCommands& Commands = FCameraShakeEditorCommands::Get();
-
-    const TSharedRef<FUICommandList>& UICommandList = GetToolkitCommands();
-
-    UICommandList->MapAction(
-        Commands.ResetCamera,
-        FExecuteAction::CreateSP(this, &FCameraShakeEditor::ResetCamera)
-    );
+    
 }
 
 
@@ -249,17 +249,7 @@ void FCameraShakeEditor::ExtendToolbar()
     {
         static void FillToolbar(FToolBarBuilder& ToolbarBuilder, FCameraShakeEditor* ThisEditor)
         {
-            ToolbarBuilder.BeginSection("Camera");
-            {
-                ToolbarBuilder.AddToolBarButton(
-                    FCameraShakeEditorCommands::Get().ResetCamera,
-                    NAME_None,
-                    FCameraShakeEditorCommands::Get().ResetCamera->GetLabel(),
-                    FCameraShakeEditorCommands::Get().ResetCamera->GetDescription(),
-                    FSlateIcon("EditorStyle", "StaticMeshEditor.ResetCamera")
-                );
-            }
-            ToolbarBuilder.EndSection();
+            
         }
     };
 
@@ -324,6 +314,11 @@ void FCameraShakeEditor::SetCameraShake(UCameraShake* InCameraShake, bool bReset
     // Set the details view.
     CameraShakeDetailsView->SetObject(CameraShake);
 
+    if (bResetCamera)
+    {
+        ResetCamera();
+    }
+
 	Viewport->UpdateCameraShake(CameraShake);
 	Viewport->RefreshViewport();
 }
@@ -351,33 +346,30 @@ void FCameraShakeEditor::RedoAction()
 	GEditor->RedoTransaction();
 }
 
-void FCameraShakeEditor::ResetCamera()
-{
-    FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
-
-    ViewportClient.SetViewLocation(FVector::ZeroVector);
-    ViewportClient.SetViewRotation(FRotator::ZeroRotator);
-    ViewportClient.ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
-}
-
 void FCameraShakeEditor::Tick(float DeltaTime)
 {
-    if (CameraShake->OscillatorTimeRemaining > 0.0f)
+    if (IsValid(CameraShakeToPlay) && CameraShakeToPlay->OscillatorTimeRemaining > 0.0f)
     {
         FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
         FMinimalViewInfo MinimalViewInfo;
-        MinimalViewInfo.Location = ViewportClient.GetViewLocation();
-        MinimalViewInfo.Rotation = ViewportClient.GetViewRotation();
-        MinimalViewInfo.FOV = ViewportClient.ViewFOV;
-
         {
-            CameraShake->UpdateAndApplyCameraShake(DeltaTime, 1.0f, MinimalViewInfo);
+            MinimalViewInfo.Location = ViewportClient.GetViewLocation();
+            MinimalViewInfo.Rotation = ViewportClient.GetViewRotation();
+            MinimalViewInfo.FOV = ViewportClient.ViewFOV;
         }
 
-        ViewportClient.SetViewLocation(MinimalViewInfo.Location);
-        ViewportClient.SetViewRotation(MinimalViewInfo.Rotation);
-        ViewportClient.ViewFOV = MinimalViewInfo.FOV;
+        {
+            UCameraShakeLibrary::CopyCameraShakeParams(CameraShake, CameraShakeToPlay);
+
+            CameraShakeToPlay->UpdateAndApplyCameraShake(DeltaTime, 1.0f, MinimalViewInfo);
+        }
+
+        {
+            ViewportClient.SetViewLocation(MinimalViewInfo.Location);
+            ViewportClient.SetViewRotation(MinimalViewInfo.Rotation);
+            ViewportClient.ViewFOV = MinimalViewInfo.FOV;
+        }
     }    
 }
 
@@ -388,17 +380,34 @@ TStatId FCameraShakeEditor::GetStatId() const
 
 FReply FCameraShakeEditor::PlayCameraShake()
 {
-    CameraShake->OscillatorTimeRemaining = CameraShake->OscillationBlendOutTime + 1.0f;
+    ResetCamera();
 
-    CameraShake->PlayShake(nullptr, 1.0f, ECameraAnimPlaySpace::World);
+    CameraShakeToPlay = NewObject<UCameraShake>(CameraShake->GetOuter(), UCameraShake::StaticClass());
+    UCameraShakeLibrary::CopyCameraShakeParams(CameraShake, CameraShakeToPlay);
+
+    CameraShakeToPlay->PlayShake(nullptr, 1.0f, ECameraAnimPlaySpace::CameraLocal);
 
     return FReply::Handled();
 }
 
 FReply FCameraShakeEditor::StopCameraShake()
 {
-    bool bImmediately = true;
-    CameraShake->StopShake(bImmediately);
+    if (IsValid(CameraShakeToPlay))
+    {
+        bool bImmediately = true;
+        CameraShakeToPlay->StopShake(bImmediately);
+    }
+
+    return FReply::Handled();
+}
+
+FReply FCameraShakeEditor::ResetCamera()
+{
+    FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
+
+    ViewportClient.SetViewLocation(FVector::ZeroVector);
+    ViewportClient.SetViewRotation(FRotator::ZeroRotator);
+    ViewportClient.ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
 
     return FReply::Handled();
 }

@@ -21,4 +21,6 @@ class CAMERASHAKERUNTIME_API UCameraShakeLibrary : public UBlueprintFunctionLibr
 public:
     UFUNCTION(BlueprintCallable, Category = "CameraShake")
     static bool PlayCameraShake(APlayerController* PlayerController, UCameraShake* Shake, float Scale = 1.f, ECameraAnimPlaySpace::Type PlaySpace = ECameraAnimPlaySpace::CameraLocal, FRotator UserPlaySpaceRot = FRotator::ZeroRotator);
+
+    static void CopyCameraShakeParams(UCameraShake* Source, UCameraShake* Target);
 };

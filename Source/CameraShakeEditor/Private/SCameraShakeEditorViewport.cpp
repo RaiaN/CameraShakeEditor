@@ -179,14 +179,6 @@ void SCameraShakeEditorViewport::BindCommands()
 {
 	SEditorViewport::BindCommands();
 
-    const FCameraShakeEditorCommands& Commands = FCameraShakeEditorCommands::Get();
-
-    TSharedRef<FCameraShakeEditorViewportClient> EditorViewportClientRef = EditorViewportClient.ToSharedRef();
-
-    CommandList->MapAction(
-        Commands.ResetCamera,
-        FExecuteAction::CreateSP(EditorViewportClientRef, &FCameraShakeEditorViewportClient::ResetCamera)
-    );
 }
 
 #undef LOCTEXT_NAMESPACE

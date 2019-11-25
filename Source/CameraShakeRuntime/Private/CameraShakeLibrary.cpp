@@ -10,11 +10,16 @@
 
 bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, UCameraShake* Shake, float Scale, ECameraAnimPlaySpace::Type PlaySpace, FRotator UserPlaySpaceRot)
 {
+    if (!IsValid(Shake))
+    {
+        return false;
+    }
+    
     APlayerCameraManager* PlayerCameraManager = PlayerController->PlayerCameraManager;
     if (!IsValid(PlayerCameraManager))
     {
         return false;
-    }
+    }    
 
     UCameraModifier_CameraShake* CameraShakeModifier = Cast<UCameraModifier_CameraShake>(
         PlayerCameraManager->FindCameraModifierByClass(UCameraModifier_CameraShake::StaticClass())
@@ -27,8 +32,22 @@ bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, U
         );
     }
 
-    CameraShakeModifier->ActiveShakes.Add(Shake);
-    Shake->PlayShake(PlayerCameraManager, Scale, PlaySpace, UserPlaySpaceRot);
+    UCameraShake* ShakeToPlay = NewObject<UCameraShake>(CameraShakeModifier);
+    CopyCameraShakeParams(Shake, ShakeToPlay);
+
+    CameraShakeModifier->ActiveShakes.Add(ShakeToPlay);
+    ShakeToPlay->PlayShake(PlayerCameraManager, Scale, PlaySpace, UserPlaySpaceRot);
 
     return true;
+}
+
+void UCameraShakeLibrary::CopyCameraShakeParams(UCameraShake* Source, UCameraShake* Target)
+{
+    Target->bSingleInstance = Source->bSingleInstance;
+    Target->OscillationDuration = Source->OscillationDuration;
+    Target->OscillationBlendInTime = Source->OscillationBlendInTime;
+    Target->OscillationBlendOutTime = Source->OscillationBlendOutTime;
+    Target->RotOscillation = Source->RotOscillation;
+    Target->LocOscillation = Source->LocOscillation;
+    Target->FOVOscillation = Source->FOVOscillation;
 }

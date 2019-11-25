@@ -26,7 +26,7 @@ class UCameraShake;
 class FCameraShakeEditor : public ICameraShakeEditor, public FGCObject, public FEditorUndoClient, public FNotifyHook, public FTickableEditorObject
 {
 public:
-    FCameraShakeEditor() : CameraShake(nullptr)
+    FCameraShakeEditor() : CameraShake(nullptr), CameraShakeToPlay(nullptr)
 	{}
 
 	~FCameraShakeEditor();
@@ -97,6 +97,7 @@ public:
 public:
     FReply PlayCameraShake();
     FReply StopCameraShake();
+    FReply ResetCamera();
 
 
 private:
@@ -116,8 +117,6 @@ private:
 
 	void RedoAction();
 
-    void ResetCamera();
-
 private:
 	/** List of open tool panels; used to ensure only one exists at any one time */
 	TMap< FName, TWeakPtr<class SDockableTab> > SpawnedToolPanels;
@@ -133,6 +132,9 @@ private:
 
 	/** The currently active Camera Shake. */
 	UCameraShake* CameraShake;
+
+    /** The Camera Shake to use for debugging. */
+    UCameraShake* CameraShakeToPlay;
 
 	/**	The tab ids for all the tabs used */
 	static const FName ViewportTabId;

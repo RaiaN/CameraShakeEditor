@@ -26,6 +26,8 @@ void FCameraShakeDetails::CustomizeDetails(class IDetailLayoutBuilder& DetailBui
     
     const FText PlayCameraShakeText = LOCTEXT("PlayCameraShake", "Play");
     const FText StopCameraShakeText = LOCTEXT("StopCameraShake", "Stop");
+    const FText ResetCameraText = LOCTEXT("ResetCamera", "Reset camera");
+
 
     CameraShakeCategory.AddCustomRow(PlayCameraShakeText, false)
     .NameContent()
@@ -63,6 +65,20 @@ void FCameraShakeDetails::CustomizeDetails(class IDetailLayoutBuilder& DetailBui
             [
                 SNew(STextBlock)
                 .Text(StopCameraShakeText)
+            ]
+        ]
+        + SHorizontalBox::Slot()
+        .AutoWidth()
+        [
+            SNew(SButton)
+            .HAlign(HAlign_Right)
+            .VAlign(VAlign_Center)
+            .ToolTipText(LOCTEXT("ResetCameraTooltip", "Resets camera to default params"))
+            .OnClicked(FOnClicked::CreateSP(&CameraShakeEditor, &FCameraShakeEditor::ResetCamera))
+            .Content()
+            [
+                SNew(STextBlock)
+                .Text(ResetCameraText)
             ]
         ]
     ];
