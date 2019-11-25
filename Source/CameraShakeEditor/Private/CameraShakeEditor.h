@@ -19,6 +19,7 @@ class SCameraShakeEditorViewport;
 struct FPropertyChangedEvent;
 struct FTabSpawnerEntry;
 class UCameraShake;
+class UCameraShakePlayParams;
 
 /**
  * CameraShake Editor class
@@ -26,7 +27,7 @@ class UCameraShake;
 class FCameraShakeEditor : public ICameraShakeEditor, public FGCObject, public FEditorUndoClient, public FNotifyHook, public FTickableEditorObject
 {
 public:
-    FCameraShakeEditor() : CameraShake(nullptr), CameraShakeToPlay(nullptr)
+    FCameraShakeEditor() : CameraShake(nullptr), CameraShakeToPlay(nullptr), CameraShakeToPlayParams(nullptr)
 	{}
 
 	~FCameraShakeEditor();
@@ -46,8 +47,11 @@ public:
 	 */
 	void InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, UCameraShake* InObjectToEdit);
 
-    /** Creates details for a static mesh */
-    TSharedRef<class IDetailCustomization> MakeCameraShakeDetails();
+    /** Creates general settings details for a camera shake */
+    TSharedRef<class IDetailCustomization> MakeCameraShakeGeneralSettingsDetails();
+
+    /** Creates play params details for a camera shake */
+    TSharedRef<class IDetailCustomization> MakeCameraShakePlayParamsDetails();
 
 	//~ Begin FGCObject Interface
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
@@ -103,6 +107,7 @@ public:
 private:
 	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);
     TSharedRef<SDockTab> SpawnTab_Properties(const FSpawnTabArgs& Args);
+    TSharedRef<SDockTab> SpawnTab_PlayParams(const FSpawnTabArgs& Args);
 
 private:
 	/** Binds commands associated with the Camera Shake Editor. */
@@ -124,19 +129,31 @@ private:
 	/** Preview Viewport widget */
 	TSharedPtr<class SCameraShakeEditorViewport> Viewport;
 
+private:
     /** Property View */
     TSharedPtr<class IDetailsView> CameraShakeDetailsView;
 
-    /** Static mesh editor detail customization */
+    /** Camera shake editor general settings */
     TWeakPtr<class FCameraShakeDetails> CameraShakeDetails;
 
+private:
+    /** Property View */
+    TSharedPtr<class IDetailsView> CameraShakePlayParamsView;
+
+    /** Camera shake editor play params */
+    TWeakPtr<class FCameraShakePlayParamsDetails> CameraShakePlayParamsDetails;
+
+private:
 	/** The currently active Camera Shake. */
 	UCameraShake* CameraShake;
 
     /** The Camera Shake to use for debugging. */
     UCameraShake* CameraShakeToPlay;
 
+    UCameraShakePlayParams* CameraShakeToPlayParams;
+
 	/**	The tab ids for all the tabs used */
 	static const FName ViewportTabId;
     static const FName PropertiesTabId;
+    static const FName PlayParamsTabId;
 };
