@@ -1,6 +1,4 @@
-//
-// Copyright (C) Google Inc. 2017. All rights reserved.
-//
+// Copyright Peter Leontev, peterleontev.com
 
 #include "CameraShakeRuntimeModule.h"
 

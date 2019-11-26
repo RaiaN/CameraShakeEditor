@@ -1,3 +1,5 @@
+// Copyright Peter Leontev, peterleontev.com
+
 #include "CameraShakeFactory.h"
 
 #include "Camera/CameraShake.h"

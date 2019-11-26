@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright Peter Leontev, peterleontev.com
 
 #include "CameraShakeLibrary.h"
 #include "GameFramework/PlayerController.h"
@@ -43,6 +42,9 @@ bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, U
 
 void UCameraShakeLibrary::CopyCameraShakeParams(UCameraShake* Source, UCameraShake* Target)
 {
+    checkSlow(Source);
+    checkSlow(Target);
+
     Target->bSingleInstance = Source->bSingleInstance;
     Target->OscillationDuration = Source->OscillationDuration;
     Target->OscillationBlendInTime = Source->OscillationBlendInTime;

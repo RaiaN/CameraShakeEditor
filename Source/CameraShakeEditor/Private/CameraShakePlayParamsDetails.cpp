@@ -1,3 +1,5 @@
+// Copyright Peter Leontev, peterleontev.com
+
 #include "CameraShakePlayParamsDetails.h"
 
 #include "DetailLayoutBuilder.h"
