@@ -1,3 +1,3 @@
-// Copyright Peter Leontev, peterleontev.com
+// Copyright 2019 Peter Leontev. All Rights Reserved.
 
 #include "CameraShakePlayParams.h"

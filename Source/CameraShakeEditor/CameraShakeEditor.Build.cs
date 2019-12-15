@@ -1,4 +1,4 @@
-// Copyright Peter Leontev, peterleontev.com
+// Copyright 2019 Peter Leontev. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -7,10 +7,8 @@ public class CameraShakeEditor : ModuleRules
 	public CameraShakeEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
         {
-            bEnableShadowVariableWarnings = false;
-
             bEnforceIWYU = true;
-            bFasterWithoutUnity = true;
+            bUseUnity = false;
 
             PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         }

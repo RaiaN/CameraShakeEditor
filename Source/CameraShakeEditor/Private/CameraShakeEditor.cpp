@@ -1,4 +1,4 @@
-// Copyright Peter Leontev, peterleontev.com
+// Copyright 2019 Peter Leontev. All Rights Reserved.
 
 #include "CameraShakeEditor.h"
 
@@ -198,7 +198,6 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
                 )
             )
         );
-
 
     // InitToolkitHost->GetTabManager().Get()->InvokeTab(PlayParamsTabId);
     // InitToolkitHost->GetTabManager().Get()->InvokeTab(PropertiesTabId);
