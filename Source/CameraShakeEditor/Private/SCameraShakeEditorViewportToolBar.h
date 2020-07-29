@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Peter Leontev. All Rights Reserved.
+﻿// Copyright 2020 Peter Leontev. All Rights Reserved.
 
 #pragma once
 
