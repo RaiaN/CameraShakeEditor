@@ -34,7 +34,7 @@ bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, U
     UCameraShake* ShakeToPlay = NewObject<UCameraShake>(CameraShakeModifier);
     CopyCameraShakeParams(Shake, ShakeToPlay);
 
-    CameraShakeModifier->ActiveShakes.Add(ShakeToPlay);
+    CameraShakeModifier->AddCameraShake(Shake->GetClass(), FAddCameraShakeParams());
     ShakeToPlay->PlayShake(PlayerCameraManager, Scale, PlaySpace, UserPlaySpaceRot);
 
     return true;
