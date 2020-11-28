@@ -10,9 +10,12 @@
 #include "Interfaces/IPluginManager.h"
 #include "Misc/Paths.h"
 
-#include "AssetTypeActions_CameraShake.h"
+#include "Camera/CameraShake.h"
 #include "CameraShakeEditor.h"
 #include "ICameraShakeEditor.h"
+
+#include "Subsystems/AssetEditorSubsystem.h"
+#include "Editor/EditorEngine.h"
 
 
 #define LOCTEXT_NAMESPACE "FCameraShakeEditorModule"
@@ -50,13 +53,25 @@ public:
 
         FSlateStyleRegistry::RegisterSlateStyle(*CameraShakeStyleSet.Get());
 
-
-
-
         MenuExtensibilityManager = MakeShareable(new FExtensibilityManager);
 
-        IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
-        AssetTools.RegisterAssetTypeActions(MakeShareable(new FAssetTypeActions_CameraShake));
+        GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OnAssetEditorOpened().AddLambda(
+            [this](UObject* ObjectToEdit)
+            {
+                if (ObjectToEdit->IsA(UBlueprint::StaticClass()) || ObjectToEdit->IsA(UCameraShake::StaticClass()))
+                {
+                    UBlueprint* Blueprint = Cast<UBlueprint>(ObjectToEdit);
+                    bool bCameraShake = Blueprint->GeneratedClass->IsChildOf(UCameraShake::StaticClass()) || Blueprint->ParentClass->IsChildOf(UCameraShake::StaticClass());
+                    if (bCameraShake)
+                    {
+                        UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(Blueprint->GeneratedClass);
+                        UCameraShake* CameraShake = Cast<UCameraShake>(BlueprintGeneratedClass->GetDefaultObject());
+                        CreateCameraShakeEditor(EToolkitMode::Standalone, TSharedPtr<IToolkitHost>(), CameraShake);
+                    }
+                    
+                }
+            }
+        );
     }
 
     /**

@@ -22,7 +22,7 @@
 		{
 			"Name": "CameraShakeEditor",
 			"Type": "Editor",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PostEngineInit"
 		}
 	]
 }

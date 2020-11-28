@@ -184,23 +184,12 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
                     ->SetSizeCoefficient(0.6f)
                     ->AddTab(ViewportTabId, ETabState::OpenedTab)
                     ->SetHideTabWell(true)
-                )
-                ->Split
-                (
-                    FTabManager::NewSplitter()->SetOrientation(Orient_Vertical)
-                    ->SetSizeCoefficient(0.2f)
-                    ->Split
-                    (
-                        FTabManager::NewStack()
-                        ->SetSizeCoefficient(0.7f)
-                        ->AddTab(PropertiesTabId, ETabState::OpenedTab)
-                    )
+                    ->AddTab(PropertiesTabId, ETabState::OpenedTab)
+                    ->AddTab(PlayParamsTabId, ETabState::OpenedTab)
+                    ->SetForegroundTab(PlayParamsTabId)
                 )
             )
         );
-
-    // InitToolkitHost->GetTabManager().Get()->InvokeTab(PlayParamsTabId);
-    // InitToolkitHost->GetTabManager().Get()->InvokeTab(PropertiesTabId);
 
     const bool bCreateDefaultStandaloneMenu = true;
     const bool bCreateDefaultToolbar = true;
@@ -212,9 +201,6 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
         bCreateDefaultToolbar, bCreateDefaultStandaloneMenu,
         InObjectToEdit
     );
-
-    FAssetEditorToolkit::InvokeTab(PlayParamsTabId);
-    FAssetEditorToolkit::InvokeTab(PropertiesTabId);
 
     ExtendMenu();
     RegenerateMenusAndToolbars();
@@ -404,8 +390,8 @@ void FCameraShakeEditor::Tick(float DeltaTime)
 
         FMinimalViewInfo MinimalViewInfo;
         {
-            MinimalViewInfo.Location = FVector::ZeroVector;
-            MinimalViewInfo.Rotation = FRotator::ZeroRotator;
+            MinimalViewInfo.Location = ViewportClient.GetViewLocation();
+            MinimalViewInfo.Rotation = ViewportClient.GetViewRotation();
             MinimalViewInfo.FOV = ViewportClient.ViewFOV;
         }
 
@@ -430,7 +416,9 @@ TStatId FCameraShakeEditor::GetStatId() const
 
 FReply FCameraShakeEditor::PlayCameraShake()
 {
-    ResetCamera();
+    FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
+
+    ResetCamera(ViewportClient.GetViewLocation(), ViewportClient.GetViewRotation());
 
     CameraShakeToPlay = NewObject<UCameraShake>(CameraShake->GetOuter(), UCameraShake::StaticClass());
     UCameraShakeLibrary::CopyCameraShakeParams(CameraShake, CameraShakeToPlay);
@@ -456,12 +444,12 @@ FReply FCameraShakeEditor::StopCameraShake()
     return FReply::Handled();
 }
 
-FReply FCameraShakeEditor::ResetCamera()
+FReply FCameraShakeEditor::ResetCamera(const FVector InViewLocation, const FRotator InViewRotation)
 {
     FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
-    ViewportClient.SetViewLocation(FVector::ZeroVector);
-    ViewportClient.SetViewRotation(FRotator::ZeroRotator);
+    ViewportClient.SetViewLocation(InViewLocation);
+    ViewportClient.SetViewRotation(InViewRotation);
     ViewportClient.ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
 
     return FReply::Handled();
