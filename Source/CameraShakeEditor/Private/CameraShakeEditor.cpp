@@ -50,7 +50,7 @@ const FName FCameraShakeEditor::PlayParamsTabId(TEXT("CameraShakeEditor_PlayPara
 const FName CameraShakeEditorAppIdentifier = FName(TEXT("CameraShakeEditorApp"));
 
 
-void FCameraShakeEditor::InitEditorForCameraShake(UCameraShake* InObjectToEdit)
+void FCameraShakeEditor::InitEditorForCameraShake(UCameraShakeBase* InObjectToEdit)
 {
     // Support undo/redo
     InObjectToEdit->SetFlags(RF_Transactional);
@@ -81,7 +81,7 @@ void FCameraShakeEditor::InitEditorForCameraShake(UCameraShake* InObjectToEdit)
         CameraShakeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 
         FOnGetDetailCustomizationInstance LayoutCustomCameraShakeProperties = FOnGetDetailCustomizationInstance::CreateSP(this, &FCameraShakeEditor::MakeCameraShakeGeneralSettingsDetails);
-        CameraShakeDetailsView->RegisterInstancedCustomPropertyLayout(UCameraShake::StaticClass(), LayoutCustomCameraShakeProperties);
+        CameraShakeDetailsView->RegisterInstancedCustomPropertyLayout(UCameraShakeBase::StaticClass(), LayoutCustomCameraShakeProperties);
     }
     {
         FDetailsViewArgs DetailsViewArgs;
@@ -155,7 +155,7 @@ FCameraShakeEditor::~FCameraShakeEditor()
     CameraShakeToPlayParams = nullptr;
 }
 
-void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InitToolkitHost, UCameraShake* InObjectToEdit)
+void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InitToolkitHost, UCameraShakeBase* InObjectToEdit)
 {
     if (InObjectToEdit != CameraShake)
     {
@@ -342,7 +342,7 @@ FEditorViewportClient& FCameraShakeEditor::GetViewportClient()
     return Viewport->GetViewportClient();
 }
 
-void FCameraShakeEditor::SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera)
+void FCameraShakeEditor::SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera)
 {
     CameraShake = InCameraShake;
     CameraShakeToPlayParams = NewObject<UCameraShakePlayParams>(CameraShake->GetOuter());
@@ -384,7 +384,7 @@ void FCameraShakeEditor::RedoAction()
 
 void FCameraShakeEditor::Tick(float DeltaTime)
 {
-    if (IsValid(CameraShakeToPlay) && CameraShakeToPlay->OscillatorTimeRemaining > 0.0f)
+    if (IsValid(CameraShakeToPlay) && !CameraShakeToPlay->IsFinished())
     {
         FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
@@ -420,10 +420,10 @@ FReply FCameraShakeEditor::PlayCameraShake()
 
     ResetCamera(ViewportClient.GetViewLocation(), ViewportClient.GetViewRotation());
 
-    CameraShakeToPlay = NewObject<UCameraShake>(CameraShake->GetOuter(), UCameraShake::StaticClass());
+    CameraShakeToPlay = NewObject<UMatineeCameraShake>(CameraShake->GetOuter(), UMatineeCameraShake::StaticClass());
     UCameraShakeLibrary::CopyCameraShakeParams(CameraShake, CameraShakeToPlay);
 
-    CameraShakeToPlay->PlayShake(
+    CameraShakeToPlay->StartShake(
         nullptr,
         CameraShakeToPlayParams->ShakeScale,
         CameraShakeToPlayParams->PlaySpace,

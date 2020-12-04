@@ -7,7 +7,7 @@
 #include "Camera/CameraModifier_CameraShake.h"
 
 
-bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, UCameraShake* Shake, float Scale, ECameraAnimPlaySpace::Type PlaySpace, FRotator UserPlaySpaceRot)
+bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, UCameraShakeBase* Shake, float Scale, ECameraShakePlaySpace PlaySpace, FRotator UserPlaySpaceRot)
 {
     if (!IsValid(Shake))
     {
@@ -31,17 +31,20 @@ bool UCameraShakeLibrary::PlayCameraShake(APlayerController* PlayerController, U
         );
     }
 
-    UCameraShake* ShakeToPlay = NewObject<UCameraShake>(CameraShakeModifier);
+    UCameraShakeBase* ShakeToPlay = NewObject<UCameraShakeBase>(CameraShakeModifier);
     CopyCameraShakeParams(Shake, ShakeToPlay);
 
     CameraShakeModifier->AddCameraShake(Shake->GetClass(), FAddCameraShakeParams());
-    ShakeToPlay->PlayShake(PlayerCameraManager, Scale, PlaySpace, UserPlaySpaceRot);
+    ShakeToPlay->StartShake(PlayerCameraManager, Scale, PlaySpace, UserPlaySpaceRot);
 
     return true;
 }
 
-void UCameraShakeLibrary::CopyCameraShakeParams(UCameraShake* Source, UCameraShake* Target)
+void UCameraShakeLibrary::CopyCameraShakeParams(UCameraShakeBase* InSource, UCameraShakeBase* InTarget)
 {
+    UMatineeCameraShake* Source = Cast<UMatineeCameraShake>(InSource);
+    UMatineeCameraShake* Target = Cast<UMatineeCameraShake>(InTarget);
+    
     checkSlow(Source);
     checkSlow(Target);
 

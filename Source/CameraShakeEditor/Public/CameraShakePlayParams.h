@@ -7,7 +7,7 @@
 #include "CameraShakePlayParams.generated.h"
 
 
-class UCameraShake;
+class UCameraShakeBase;
 
 
 UCLASS()
@@ -17,7 +17,7 @@ class UCameraShakePlayParams : public UObject
 
 public:
     UPROPERTY(Transient, EditAnywhere, Category = CameraShakePlayParams)
-	TEnumAsByte<ECameraAnimPlaySpace::Type> PlaySpace = ECameraAnimPlaySpace::CameraLocal;
+	ECameraShakePlaySpace PlaySpace = ECameraShakePlaySpace::CameraLocal;
 
 	UPROPERTY(Transient, EditAnywhere, BlueprintReadWrite, Category = CameraShakePlayParams)
 	float ShakeScale = 1.0f;

@@ -14,7 +14,7 @@ class FPreviewScene;
 class FCanvas;
 class ICameraShakeEditor;
 class SCameraShakeEditorViewport;
-class UCameraShake;
+class UCameraShakeBase;
 class FSceneViewFamily;
 
 
@@ -22,7 +22,7 @@ class FSceneViewFamily;
 class FCameraShakeEditorViewportClient : public FEditorViewportClient, public TSharedFromThis<FCameraShakeEditorViewportClient>
 {
 public:
-    FCameraShakeEditorViewportClient(TWeakPtr<ICameraShakeEditor> InCameraShakeEditor, const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport, const TSharedRef<FPreviewScene>& InPreviewScene, UCameraShake* InCameraShake);
+    FCameraShakeEditorViewportClient(TWeakPtr<ICameraShakeEditor> InCameraShakeEditor, const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport, const TSharedRef<FPreviewScene>& InPreviewScene, UCameraShakeBase* InCameraShake);
 	~FCameraShakeEditorViewportClient();
 
 	// FEditorViewportClient interface
@@ -37,11 +37,11 @@ public:
 
     void ResetCamera();
 
-	void SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera=true);
+	void SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera=true);
 
 private:
 	/** The camera shake being used in the editor. */
-	UCameraShake* CameraShake;
+	UCameraShakeBase* CameraShake;
 
 	/** Pointer back to the CameraShake editor tool that owns us */
 	TWeakPtr<ICameraShakeEditor> CameraShakeEditorPtr;

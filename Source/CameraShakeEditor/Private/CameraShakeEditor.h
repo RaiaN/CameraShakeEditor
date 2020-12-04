@@ -18,7 +18,7 @@ class SDockableTab;
 class SCameraShakeEditorViewport;
 struct FPropertyChangedEvent;
 struct FTabSpawnerEntry;
-class UCameraShake;
+class UCameraShakeBase;
 class UCameraShakePlayParams;
 
 /**
@@ -33,7 +33,7 @@ public:
 	~FCameraShakeEditor();
 
 	/** Initializes the editor to use a camera shake. Should be the first thing called. */
-	void InitEditorForCameraShake(UCameraShake* InCameraShake);
+	void InitEditorForCameraShake(UCameraShakeBase* InCameraShake);
 
 	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
@@ -45,7 +45,7 @@ public:
 	 * @param	InitToolkitHost			When Mode is WorldCentric, this is the level editor instance to spawn this editor within
 	 * @param	ObjectToEdit			The camera shake to edit
 	 */
-	void InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, UCameraShake* InObjectToEdit);
+	void InitCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, UCameraShakeBase* InObjectToEdit);
 
     /** Creates general settings details for a camera shake */
     TSharedRef<class IDetailCustomization> MakeCameraShakeGeneralSettingsDetails();
@@ -116,7 +116,7 @@ private:
     void ExtendToolbar();
 
 	
-	void SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera = true);
+	void SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera = true);
 
 	void UndoAction();
 
@@ -145,10 +145,10 @@ private:
 
 private:
 	/** The currently active Camera Shake. */
-	UCameraShake* CameraShake;
+	UCameraShakeBase* CameraShake;
 
     /** The Camera Shake to use for debugging. */
-    UCameraShake* CameraShakeToPlay;
+    UCameraShakeBase* CameraShakeToPlay;
 
     UCameraShakePlayParams* CameraShakeToPlayParams;
 

@@ -58,14 +58,14 @@ public:
         GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OnAssetEditorOpened().AddLambda(
             [this](UObject* ObjectToEdit)
             {
-                if (ObjectToEdit->IsA(UBlueprint::StaticClass()) || ObjectToEdit->IsA(UCameraShake::StaticClass()))
+                if (ObjectToEdit->IsA(UBlueprint::StaticClass()) || ObjectToEdit->IsA(UCameraShakeBase::StaticClass()))
                 {
                     UBlueprint* Blueprint = Cast<UBlueprint>(ObjectToEdit);
-                    bool bCameraShake = Blueprint->GeneratedClass->IsChildOf(UCameraShake::StaticClass()) || Blueprint->ParentClass->IsChildOf(UCameraShake::StaticClass());
+                    bool bCameraShake = Blueprint->GeneratedClass->IsChildOf(UCameraShakeBase::StaticClass()) || Blueprint->ParentClass->IsChildOf(UCameraShakeBase::StaticClass());
                     if (bCameraShake)
                     {
                         UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(Blueprint->GeneratedClass);
-                        UCameraShake* CameraShake = Cast<UCameraShake>(BlueprintGeneratedClass->GetDefaultObject());
+                        UCameraShakeBase* CameraShake = Cast<UCameraShakeBase>(BlueprintGeneratedClass->GetDefaultObject());
                         CreateCameraShakeEditor(EToolkitMode::Standalone, TSharedPtr<IToolkitHost>(), CameraShake);
                     }
                     
@@ -87,7 +87,7 @@ public:
     /**
      * Creates a new CameraShake editor for a CameraShake
      */
-    virtual TSharedRef<ICameraShakeEditor> CreateCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UCameraShake* CameraShake)
+    virtual TSharedRef<ICameraShakeEditor> CreateCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UCameraShakeBase* CameraShake)
     {
         TSharedRef<FCameraShakeEditor> NewCameraShakeEditor(new FCameraShakeEditor());
         NewCameraShakeEditor->InitEditorForCameraShake(CameraShake);
