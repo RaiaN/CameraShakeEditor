@@ -1,4 +1,4 @@
-# ue4_camera_shake_editor
+# Unreal Engine Camera Shake Editor
 
 This plugin allows to set up CameraShake parameters at realtime using opened Level as the background.
 
