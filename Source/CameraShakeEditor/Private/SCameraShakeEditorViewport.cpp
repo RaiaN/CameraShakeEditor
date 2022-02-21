@@ -130,7 +130,7 @@ void SCameraShakeEditorViewport::OnObjectPropertyChanged(UObject* ObjectBeingMod
     RefreshViewport();
 }
 
-void SCameraShakeEditorViewport::UpdateCameraShake(UCameraShake* InCameraShake, bool bResetCamera/*= true*/)
+void SCameraShakeEditorViewport::UpdateCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera/*= true*/)
 {
 	
 }

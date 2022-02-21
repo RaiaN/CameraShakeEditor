@@ -9,7 +9,8 @@
 #include "CameraShakeLibrary.generated.h"
 
 
-class UCameraShake;
+class UCameraShakeBase;
+class UCameraShakeBase;
 class APlayerController;
 
 
@@ -20,7 +21,7 @@ class CAMERASHAKERUNTIME_API UCameraShakeLibrary : public UBlueprintFunctionLibr
 
 public:
     UFUNCTION(BlueprintCallable, Category = "CameraShake")
-    static bool PlayCameraShake(APlayerController* PlayerController, UCameraShake* Shake, float Scale = 1.f, ECameraAnimPlaySpace::Type PlaySpace = ECameraAnimPlaySpace::CameraLocal, FRotator UserPlaySpaceRot = FRotator::ZeroRotator);
+    static bool PlayCameraShake(APlayerController* PlayerController, UCameraShakeBase* Shake, float Scale = 1.f, ECameraShakePlaySpace PlaySpace = ECameraShakePlaySpace::CameraLocal, FRotator UserPlaySpaceRot = FRotator::ZeroRotator);
 
-    static void CopyCameraShakeParams(UCameraShake* Source, UCameraShake* Target);
+    static void CopyCameraShakeParams(UCameraShakeBase* Source, UCameraShakeBase* Target);
 };

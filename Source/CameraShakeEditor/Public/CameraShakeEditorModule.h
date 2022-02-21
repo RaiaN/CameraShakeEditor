@@ -9,7 +9,7 @@
 #include "ICameraShakeEditor.h"
 
 
-class UCameraShake;
+class UCameraShakeBase;
 class FSlateStyleSet;
 
 
@@ -19,7 +19,7 @@ public:
     /**
      * Creates a new camera shake editor.
      */
-    virtual TSharedRef<ICameraShakeEditor> CreateCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, UCameraShake* CameraShake) = 0;
+    virtual TSharedRef<ICameraShakeEditor> CreateCameraShakeEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost >& InitToolkitHost, UCameraShakeBase* CameraShake) = 0;
 
     /** Delegate to be called when a Material Editor is created, for toolbar, tab, and menu extension **/
     DECLARE_EVENT_OneParam(ICameraShakeEditorModule, FCameraShakeEditorOpenedEvent, TWeakPtr<ICameraShakeEditor>);

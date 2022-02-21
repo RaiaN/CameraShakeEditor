@@ -24,7 +24,7 @@ class SCameraShakeEditorViewport : public SEditorViewport, public FGCObject, pub
 public:
 	SLATE_BEGIN_ARGS(SCameraShakeEditorViewport){}
 		SLATE_ARGUMENT(TWeakPtr<ICameraShakeEditor>, CameraShakeEditor)
-		SLATE_ARGUMENT(UCameraShake*, ObjectToEdit)
+		SLATE_ARGUMENT(UCameraShakeBase*, ObjectToEdit)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -39,7 +39,7 @@ public:
 	void RefreshViewport();
 
 
-	void UpdateCameraShake(UCameraShake* InCameraShake, bool bResetCamera=true);
+	void UpdateCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera=true);
 
 	/** @return The editor viewport client */
 	class FCameraShakeEditorViewportClient& GetViewportClient();
@@ -98,7 +98,7 @@ private:
 	TSharedPtr<class FCameraShakeEditorViewportClient> EditorViewportClient;
 
 	/** Camera shake being edited */
-	UCameraShake* CameraShake;
+	UCameraShakeBase* CameraShake;
 
 	/** Pointer to the vertical box into which the overlay text items are added */
 	TSharedPtr<SVerticalBox> OverlayTextVerticalBox;

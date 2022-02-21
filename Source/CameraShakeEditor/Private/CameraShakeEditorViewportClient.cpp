@@ -19,7 +19,7 @@ FCameraShakeEditorViewportClient::FCameraShakeEditorViewportClient(
     TWeakPtr<ICameraShakeEditor> InCameraShakeEditor,
     const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport,
     const TSharedRef<FPreviewScene>& InPreviewScene,
-    UCameraShake* InCameraShake
+    UCameraShakeBase* InCameraShake
 ) : 
     FEditorViewportClient(
         nullptr,
@@ -116,13 +116,13 @@ void FCameraShakeEditorViewportClient::ProcessClick(class FSceneView& InView, cl
 }
 
 
-void FCameraShakeEditorViewportClient::SetCameraShake(UCameraShake* InCameraShake, bool bResetCamera/* =true */)
+void FCameraShakeEditorViewportClient::SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera/* =true */)
 {
     CameraShake = InCameraShake;
 
 	if (bResetCamera)
     {
-        CameraShake->StopShake(true);
+        // CameraShake->StopShake(true);
         ResetCamera();
 	}
 }

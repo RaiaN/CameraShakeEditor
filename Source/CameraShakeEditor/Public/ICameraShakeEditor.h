@@ -7,7 +7,7 @@
 #include "Toolkits/AssetEditorToolkit.h"
 
 
-class UCameraShake;
+class UCameraShakeBase;
 
 /**
  * Public interface to Camera Shake Editor
