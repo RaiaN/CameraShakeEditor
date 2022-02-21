@@ -12,9 +12,10 @@
 #include "EditorStyleSet.h"
 #include "Editor/UnrealEdEngine.h"
 #include "Editor.h"
+#include "LevelEditorViewport.h"
 #include "UnrealEdGlobals.h"
 
-#include "Camera/CameraShake.h"
+#include "MatineeCameraShake.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraTypes.h"
 
@@ -111,23 +112,23 @@ void FCameraShakeEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>
 	InTabManager->RegisterTabSpawner(
         ViewportTabId, FOnSpawnTab::CreateSP(this, &FCameraShakeEditor::SpawnTab_Viewport) 
     )
-        .SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
-        .SetGroup(WorkspaceMenuCategoryRef)
-        .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Viewports"));
+    .SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
+    .SetGroup(WorkspaceMenuCategoryRef)
+    .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Viewports"));
 
     InTabManager->RegisterTabSpawner(
         PropertiesTabId, FOnSpawnTab::CreateSP(this, &FCameraShakeEditor::SpawnTab_Properties)
     )
-        .SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
-        .SetGroup(WorkspaceMenuCategoryRef)
-        .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+    .SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
+    .SetGroup(WorkspaceMenuCategoryRef)
+    .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
     InTabManager->RegisterTabSpawner(
         PlayParamsTabId, FOnSpawnTab::CreateSP(this, &FCameraShakeEditor::SpawnTab_PlayParams)
     )
-        .SetDisplayName(LOCTEXT("PlayParamsTab", "PlayParams"))
-        .SetGroup(WorkspaceMenuCategoryRef)
-        .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.PlayParams"));
+    .SetDisplayName(LOCTEXT("PlayParamsTab", "PlayParams"))
+    .SetGroup(WorkspaceMenuCategoryRef)
+    .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.PlayParams"));
 
 	OnRegisterTabSpawners().Broadcast(InTabManager);
 }
@@ -176,17 +177,29 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
             )
             ->Split
             (
-                FTabManager::NewSplitter()->SetOrientation(Orient_Horizontal)
-                ->SetSizeCoefficient(0.9f)
+                FTabManager::NewSplitter()->SetOrientation(Orient_Horizontal)->SetSizeCoefficient(0.9f)
                 ->Split
                 (
                     FTabManager::NewStack()
-                    ->SetSizeCoefficient(0.6f)
-                    ->AddTab(ViewportTabId, ETabState::OpenedTab)
                     ->SetHideTabWell(true)
-                    ->AddTab(PropertiesTabId, ETabState::OpenedTab)
-                    ->AddTab(PlayParamsTabId, ETabState::OpenedTab)
-                    ->SetForegroundTab(PlayParamsTabId)
+                    ->AddTab(ViewportTabId, ETabState::OpenedTab)
+                )
+                ->Split
+                (
+                    FTabManager::NewSplitter()->SetOrientation(Orient_Vertical)->SetSizeCoefficient(0.1f)
+                    ->Split
+                    (
+                        FTabManager::NewStack()
+                        ->SetHideTabWell(true)
+                        ->AddTab(PlayParamsTabId, ETabState::OpenedTab)
+                        
+                    )
+                    ->Split
+                    (
+                        FTabManager::NewStack()
+                        ->SetHideTabWell(true)
+                        ->AddTab(PropertiesTabId, ETabState::OpenedTab)
+                    )
                 )
             )
         );
@@ -350,11 +363,6 @@ void FCameraShakeEditor::SetCameraShake(UCameraShakeBase* InCameraShake, bool bR
     CameraShakeDetailsView->SetObject(CameraShake);
     CameraShakePlayParamsView->SetObject(CameraShakeToPlayParams);
 
-    if (bResetCamera)
-    {
-        ResetCamera();
-    }
-
 	Viewport->UpdateCameraShake(CameraShake);
 	Viewport->RefreshViewport();
 }
@@ -418,8 +426,6 @@ FReply FCameraShakeEditor::PlayCameraShake()
 {
     FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
-    ResetCamera(ViewportClient.GetViewLocation(), ViewportClient.GetViewRotation());
-
     CameraShakeToPlay = NewObject<UMatineeCameraShake>(CameraShake->GetOuter(), UMatineeCameraShake::StaticClass());
     UCameraShakeLibrary::CopyCameraShakeParams(CameraShake, CameraShakeToPlay);
 
@@ -444,13 +450,11 @@ FReply FCameraShakeEditor::StopCameraShake()
     return FReply::Handled();
 }
 
-FReply FCameraShakeEditor::ResetCamera(const FVector InViewLocation, const FRotator InViewRotation)
+FReply FCameraShakeEditor::ResetCamera()
 {
     FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
-    ViewportClient.SetViewLocation(InViewLocation);
-    ViewportClient.SetViewRotation(InViewRotation);
-    ViewportClient.ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
+    ViewportClient.ResetCamera();
 
     return FReply::Handled();
 }

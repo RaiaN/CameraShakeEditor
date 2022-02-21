@@ -6,6 +6,7 @@
 #include "UObject/Package.h"
 #include "EditorStyleSet.h"
 #include "Slate/SceneViewport.h"
+#include "LevelEditorViewport.h"
 #include "ComponentReregisterContext.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SEditorViewportToolBarMenu.h"
@@ -118,6 +119,7 @@ void SCameraShakeEditorViewport::RefreshViewport()
 {
 	// Invalidate the viewport's display.
 	SceneViewport->Invalidate();
+	EditorViewportClient->Invalidate();
 }
 
 void SCameraShakeEditorViewport::OnObjectPropertyChanged(UObject* ObjectBeingModified, FPropertyChangedEvent& PropertyChangedEvent)
@@ -132,7 +134,7 @@ void SCameraShakeEditorViewport::OnObjectPropertyChanged(UObject* ObjectBeingMod
 
 void SCameraShakeEditorViewport::UpdateCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera/*= true*/)
 {
-	
+	EditorViewportClient->ResetCamera();
 }
 
 bool SCameraShakeEditorViewport::IsVisible() const
@@ -148,12 +150,26 @@ FCameraShakeEditorViewportClient& SCameraShakeEditorViewport::GetViewportClient(
 
 TSharedRef<FEditorViewportClient> SCameraShakeEditorViewport::MakeEditorViewportClient()
 {
+    FMinimalViewInfo ViewInfo;
+	
+	if (GEditor->GetLevelViewportClients().Num() > 0)
+    {
+        const FLevelEditorViewportClient* ViewportClient = GEditor->GetLevelViewportClients()[1];
+        if (ViewportClient != nullptr)
+        {
+			ViewInfo.Location = ViewportClient->GetViewLocation();
+			ViewInfo.Rotation = ViewportClient->GetViewRotation();
+			ViewInfo.FOV = ViewportClient->ViewFOV;
+        }
+    }
+	
 	EditorViewportClient = MakeShareable(
         new FCameraShakeEditorViewportClient(
             CameraShakeEditorPtr,
             SharedThis(this),
             PreviewScene.ToSharedRef(),
-            CameraShake
+            CameraShake,
+			ViewInfo
         ) 
     );
 

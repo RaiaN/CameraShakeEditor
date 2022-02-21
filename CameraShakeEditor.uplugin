@@ -25,5 +25,11 @@
 			"LoadingPhase": "PostEngineInit"
 		}
 	],
+	"Plugins": [
+        {
+            "Name": "GameplayCameras",
+            "Enabled": true
+        }
+	],
 	"WhitelistPlatforms": [ "Win64", "Win32" ]
 }

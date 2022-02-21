@@ -22,7 +22,13 @@ class FSceneViewFamily;
 class FCameraShakeEditorViewportClient : public FEditorViewportClient, public TSharedFromThis<FCameraShakeEditorViewportClient>
 {
 public:
-    FCameraShakeEditorViewportClient(TWeakPtr<ICameraShakeEditor> InCameraShakeEditor, const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport, const TSharedRef<FPreviewScene>& InPreviewScene, UCameraShakeBase* InCameraShake);
+    FCameraShakeEditorViewportClient(
+		TWeakPtr<ICameraShakeEditor> InCameraShakeEditor,
+		const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport,
+		const TSharedRef<FPreviewScene>& InPreviewScene,
+		UCameraShakeBase* InCameraShake,
+        const FMinimalViewInfo& InViewInfo
+	);
 	~FCameraShakeEditorViewportClient();
 
 	// FEditorViewportClient interface
@@ -35,9 +41,10 @@ public:
 
     virtual UWorld* GetWorld() const override;
 
-    void ResetCamera();
-
-	void SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera=true);
+	void ResetCamera();
+	
+private:
+	void SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera = true);
 
 private:
 	/** The camera shake being used in the editor. */
@@ -51,4 +58,7 @@ private:
 
 	/** Stored pointer to the preview scene in which the camera shake is shown */
 	FPreviewScene* PreviewScene;
+
+	// Initial view info
+	FMinimalViewInfo InitialViewInfo;
 };

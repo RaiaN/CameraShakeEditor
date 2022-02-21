@@ -76,7 +76,7 @@ void FCameraShakeDetails::CustomizeDetails(class IDetailLayoutBuilder& DetailBui
             .HAlign(HAlign_Right)
             .VAlign(VAlign_Center)
             .ToolTipText(LOCTEXT("ResetCameraTooltip", "Resets camera to default params"))
-            .OnClicked(FOnClicked::CreateSP(&CameraShakeEditor, &FCameraShakeEditor::ResetCamera, FVector::ZeroVector, FRotator::ZeroRotator))
+            .OnClicked(FOnClicked::CreateSP(&CameraShakeEditor, &FCameraShakeEditor::ResetCamera))
             .Content()
             [
                 SNew(STextBlock)
