@@ -10,7 +10,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "Misc/Paths.h"
 
-#include "Camera/CameraShake.h"
+#include "MatineeCameraShake.h"
 #include "CameraShakeEditor.h"
 #include "ICameraShakeEditor.h"
 

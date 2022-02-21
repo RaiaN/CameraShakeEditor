@@ -24,7 +24,8 @@ public class CameraShakeRuntime : ModuleRules
 				"Core",
 				"CoreUObject",
 				"ApplicationCore",
-				"Engine"
+				"Engine",
+                "GameplayCameras"
             }
 		);
 	}

@@ -8,7 +8,7 @@
 #include "SEditorViewport.h"
 #include "PreviewScene.h"
 #include "Editor/EditorEngine.h"
-#include "Camera/CameraShake.h"
+#include "MatineeCameraShake.h"
 
 #include "ICameraShakeEditor.h"
 #include "SCameraShakeEditorViewport.h"

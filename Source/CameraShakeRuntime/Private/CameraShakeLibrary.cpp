@@ -3,7 +3,7 @@
 #include "CameraShakeLibrary.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
-#include "Camera/CameraShake.h"
+#include "MatineeCameraShake.h"
 #include "Camera/CameraModifier_CameraShake.h"
 
 

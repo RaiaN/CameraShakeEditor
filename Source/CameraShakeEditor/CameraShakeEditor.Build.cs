@@ -36,7 +36,8 @@ public class CameraShakeEditor : ModuleRules
                 "PropertyEditor",
                 "AssetTools",
                 "Projects",
-                "CameraShakeRuntime"
+				"GameplayCameras",
+				"CameraShakeRuntime"
             }
 		);
 
