@@ -19,20 +19,24 @@ FCameraShakeEditorViewportClient::FCameraShakeEditorViewportClient(
     TWeakPtr<ICameraShakeEditor> InCameraShakeEditor,
     const TSharedRef<SCameraShakeEditorViewport>& InCameraShakeEditorViewport,
     const TSharedRef<FPreviewScene>& InPreviewScene,
-    UCameraShakeBase* InCameraShake
-) : 
-    FEditorViewportClient(
+    UCameraShakeBase* InCameraShake,
+    const FMinimalViewInfo& InViewInfo
+) : FEditorViewportClient(
         nullptr,
         &InPreviewScene.Get(),
         StaticCastSharedRef<SEditorViewport>(InCameraShakeEditorViewport)
     )
-	, CameraShakeEditorPtr(InCameraShakeEditor)
-	, CameraShakeEditorViewportPtr(InCameraShakeEditorViewport)
+    , InitialViewInfo(InViewInfo)
+    , CameraShakeEditorPtr(InCameraShakeEditor)
+    , CameraShakeEditorViewportPtr(InCameraShakeEditorViewport)
 {
     PreviewScene = &InPreviewScene.Get();
 
-    bool bReset = true;
-	SetCameraShake(InCameraShake, bReset);
+	CameraShake = InCameraShake;
+    {
+        ResetCamera();
+    }
+
 
     EngineShowFlags = FEngineShowFlags(ESFIM_Editor);
     EngineShowFlags.SetEditor(false);
@@ -76,12 +80,10 @@ UWorld* FCameraShakeEditorViewportClient::GetWorld() const
 
 void FCameraShakeEditorViewportClient::ResetCamera()
 {
-    SetViewLocation(FVector::ZeroVector);
-    SetViewRotation(FRotator::ZeroRotator);
-
-    Invalidate();
+    SetViewLocation(InitialViewInfo.Location);
+    SetViewRotation(InitialViewInfo.Rotation);
+    ViewFOV = InitialViewInfo.FOV;
 }
-
 
 void FCameraShakeEditorViewportClient::MouseMove(FViewport* InViewport,int32 x, int32 y)
 {
@@ -113,18 +115,6 @@ bool FCameraShakeEditorViewportClient::InputAxis(FViewport* InViewport, int32 Co
 void FCameraShakeEditorViewportClient::ProcessClick(class FSceneView& InView, class HHitProxy* HitProxy, FKey Key, EInputEvent Event, uint32 HitX, uint32 HitY)
 {
 	Invalidate();
-}
-
-
-void FCameraShakeEditorViewportClient::SetCameraShake(UCameraShakeBase* InCameraShake, bool bResetCamera/* =true */)
-{
-    CameraShake = InCameraShake;
-
-	if (bResetCamera)
-    {
-        // CameraShake->StopShake(true);
-        ResetCamera();
-	}
 }
 
 #undef LOCTEXT_NAMESPACE 

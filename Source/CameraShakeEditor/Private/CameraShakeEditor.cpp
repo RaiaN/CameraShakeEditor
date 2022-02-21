@@ -12,6 +12,7 @@
 #include "EditorStyleSet.h"
 #include "Editor/UnrealEdEngine.h"
 #include "Editor.h"
+#include "LevelEditorViewport.h"
 #include "UnrealEdGlobals.h"
 
 #include "MatineeCameraShake.h"
@@ -362,11 +363,6 @@ void FCameraShakeEditor::SetCameraShake(UCameraShakeBase* InCameraShake, bool bR
     CameraShakeDetailsView->SetObject(CameraShake);
     CameraShakePlayParamsView->SetObject(CameraShakeToPlayParams);
 
-    if (bResetCamera)
-    {
-        ResetCamera();
-    }
-
 	Viewport->UpdateCameraShake(CameraShake);
 	Viewport->RefreshViewport();
 }
@@ -430,8 +426,6 @@ FReply FCameraShakeEditor::PlayCameraShake()
 {
     FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
-    ResetCamera(ViewportClient.GetViewLocation(), ViewportClient.GetViewRotation());
-
     CameraShakeToPlay = NewObject<UMatineeCameraShake>(CameraShake->GetOuter(), UMatineeCameraShake::StaticClass());
     UCameraShakeLibrary::CopyCameraShakeParams(CameraShake, CameraShakeToPlay);
 
@@ -456,13 +450,11 @@ FReply FCameraShakeEditor::StopCameraShake()
     return FReply::Handled();
 }
 
-FReply FCameraShakeEditor::ResetCamera(const FVector InViewLocation, const FRotator InViewRotation)
+FReply FCameraShakeEditor::ResetCamera()
 {
     FCameraShakeEditorViewportClient& ViewportClient = Viewport->GetViewportClient();
 
-    ViewportClient.SetViewLocation(InViewLocation);
-    ViewportClient.SetViewRotation(InViewRotation);
-    ViewportClient.ViewFOV = EditorViewportDefs::DefaultPerspectiveFOVAngle;
+    ViewportClient.ResetCamera();
 
     return FReply::Handled();
 }

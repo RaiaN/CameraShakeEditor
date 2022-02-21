@@ -20,8 +20,6 @@
 
 #define LOCTEXT_NAMESPACE "FCameraShakeEditorModule"
 
-
-
 /**
  * CameraShake editor module
  */
@@ -61,11 +59,11 @@ public:
                 if (ObjectToEdit->IsA(UBlueprint::StaticClass()) || ObjectToEdit->IsA(UCameraShakeBase::StaticClass()))
                 {
                     UBlueprint* Blueprint = Cast<UBlueprint>(ObjectToEdit);
+
                     bool bCameraShake = Blueprint->GeneratedClass->IsChildOf(UCameraShakeBase::StaticClass()) || Blueprint->ParentClass->IsChildOf(UCameraShakeBase::StaticClass());
                     if (bCameraShake)
                     {
-                        UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(Blueprint->GeneratedClass);
-                        UCameraShakeBase* CameraShake = Cast<UCameraShakeBase>(BlueprintGeneratedClass->GetDefaultObject());
+                        UCameraShakeBase* CameraShake = Blueprint->GeneratedClass->GetDefaultObject<UCameraShakeBase>();;
                         CreateCameraShakeEditor(EToolkitMode::Standalone, TSharedPtr<IToolkitHost>(), CameraShake);
                     }
                     
@@ -104,8 +102,6 @@ private:
 
     TSharedPtr<FSlateStyleSet> CameraShakeStyleSet;
 };
-
-
 
 #undef LOCTEXT_NAMESPACE
 	

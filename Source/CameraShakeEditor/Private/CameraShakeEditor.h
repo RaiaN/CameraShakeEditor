@@ -101,7 +101,7 @@ public:
 public:
     FReply PlayCameraShake();
     FReply StopCameraShake();
-    FReply ResetCamera(const FVector InViewLocation = FVector::ZeroVector, const FRotator InViewRotation = FRotator::ZeroRotator);
+    FReply ResetCamera();
 
 
 private:
