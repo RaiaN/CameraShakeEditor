@@ -164,44 +164,38 @@ void FCameraShakeEditor::InitCameraShakeEditor(const EToolkitMode::Type Mode, co
         InitEditorForCameraShake(InObjectToEdit);
     }
 
-    const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CameraShakeEditor_Layout_v1.0")
+    const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CameraShakeEditor_Layout_UE5_v1.1")
         ->AddArea
         (
-            FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
+            FTabManager::NewPrimaryArea()
+            ->SetOrientation(Orient_Horizontal)
+            ->SetSizeCoefficient(0.9f)
             ->Split
             (
                 FTabManager::NewStack()
-                ->SetSizeCoefficient(0.1f)
+                ->SetSizeCoefficient(0.8f)
                 ->SetHideTabWell(true)
-                ->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
+                ->AddTab(ViewportTabId, ETabState::OpenedTab)
             )
             ->Split
             (
-                FTabManager::NewSplitter()->SetOrientation(Orient_Horizontal)->SetSizeCoefficient(0.9f)
+                FTabManager::NewSplitter()->SetOrientation(Orient_Vertical)
+                ->SetSizeCoefficient(0.2f)
                 ->Split
                 (
                     FTabManager::NewStack()
                     ->SetHideTabWell(true)
-                    ->AddTab(ViewportTabId, ETabState::OpenedTab)
+                    ->AddTab(PlayParamsTabId, ETabState::OpenedTab)
+
                 )
                 ->Split
                 (
-                    FTabManager::NewSplitter()->SetOrientation(Orient_Vertical)->SetSizeCoefficient(0.1f)
-                    ->Split
-                    (
-                        FTabManager::NewStack()
-                        ->SetHideTabWell(true)
-                        ->AddTab(PlayParamsTabId, ETabState::OpenedTab)
-                        
-                    )
-                    ->Split
-                    (
-                        FTabManager::NewStack()
-                        ->SetHideTabWell(true)
-                        ->AddTab(PropertiesTabId, ETabState::OpenedTab)
-                    )
+                    FTabManager::NewStack()
+                    ->SetHideTabWell(true)
+                    ->AddTab(PropertiesTabId, ETabState::OpenedTab)
                 )
             )
+            ->AsArea().ToSharedRef()
         );
 
     const bool bCreateDefaultStandaloneMenu = true;
@@ -265,24 +259,30 @@ TSharedRef<SDockTab> FCameraShakeEditor::SpawnTab_Properties(const FSpawnTabArgs
 {
     check(Args.GetTabId() == PropertiesTabId);
 
-    return SNew(SDockTab)
-        .Icon(FEditorStyle::GetBrush("CameraShakeEditor.Tabs.Properties"))
-        .Label(LOCTEXT("CameraShakeProperties_TabTitle", "Details"))
-        [
-            CameraShakeDetailsView.ToSharedRef()
-        ];
+    TSharedPtr<SDockTab> NewTab = SNew(SDockTab)
+    [
+        CameraShakeDetailsView.ToSharedRef()
+    ];
+
+    NewTab->SetTabIcon(FEditorStyle::GetBrush("CameraShakeEditor.Tabs.Properties"));
+    NewTab->SetLabel(LOCTEXT("CameraShakeProperties_TabTitle", "Details"));
+
+    return NewTab.ToSharedRef();
 }
 
 TSharedRef<SDockTab> FCameraShakeEditor::SpawnTab_PlayParams(const FSpawnTabArgs& Args)
 {
     check(Args.GetTabId() == PlayParamsTabId);
 
-    return SNew(SDockTab)
-        .Icon(FEditorStyle::GetBrush("CameraShakeEditor.Tabs.PlayParams"))
-        .Label(LOCTEXT("CameraShakePlayParams_TabTitle", "Play Params"))
-        [
-            CameraShakePlayParamsView.ToSharedRef()
-        ];
+    TSharedPtr<SDockTab> NewTab = SNew(SDockTab)
+    [
+        CameraShakePlayParamsView.ToSharedRef()
+    ];
+
+    NewTab->SetTabIcon(FEditorStyle::GetBrush("CameraShakeEditor.Tabs.PlayParams"));
+    NewTab->SetLabel(LOCTEXT("CameraShakePlayParams_TabTitle", "Play Params"));
+
+    return NewTab.ToSharedRef();
 }
 
 void FCameraShakeEditor::BindCommands()
