@@ -17,12 +17,14 @@
 		{
 			"Name": "CameraShakeRuntime",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [ "Win64" ]
 		},
 		{
 			"Name": "CameraShakeEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "PostEngineInit",
+			"WhitelistPlatforms": [ "Win64" ]
 		}
 	],
 	"Plugins": [
@@ -31,5 +33,4 @@
             "Enabled": true
         }
 	],
-	"WhitelistPlatforms": [ "Win64", "Win32" ]
 }
