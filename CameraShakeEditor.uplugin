@@ -2,16 +2,17 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "CameraShakeEditor",
+	"FriendlyName": "Camera Shake Editor",
 	"Description": "Allows to set up a camera shake in realtime",
 	"Category": "Code Plugins",
 	"CreatedBy": "Peter Leontev",
 	"CreatedByURL": "https://peterleontev.com/",
 	"DocsURL": "",
-	"MarketplaceURL": "",
+	"MarketplaceURL" : "com.epicgames.launcher://ue/marketplace/product/8db6ba0d04264717823a3dc042fb7549",
 	"SupportURL": "raianknight@gmail.com",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
@@ -23,7 +24,7 @@
 		{
 			"Name": "CameraShakeEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit",
+			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [ "Win64" ]
 		}
 	],
@@ -32,5 +33,5 @@
             "Name": "GameplayCameras",
             "Enabled": true
         }
-	],
+	]
 }
