@@ -9,6 +9,7 @@
 #include "ICameraShakeEditor.h"
 #include "Input/Reply.h"
 #include "TickableEditorObject.h"
+#include "EditorUndoClient.h"
 
 
 class FEditorViewportClient;
