@@ -24,7 +24,7 @@
 		{
 			"Name": "CameraShakeEditor",
 			"Type": "Editor",
-			"LoadingPhase": "Default",
+			"LoadingPhase": "PostEngineInit",
 			"WhitelistPlatforms": [ "Win64" ]
 		}
 	],
